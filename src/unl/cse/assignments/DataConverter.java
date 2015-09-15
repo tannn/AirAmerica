@@ -3,9 +3,12 @@ package unl.cse.assignments;
 /* Phase-I */
 import com.airamerica.*;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.PrintWriter;
-
+import java.util.Scanner;
 
 // Include imports for XML/JSON libraries if needed
 import com.thoughtworks.xstream.XStream;
@@ -17,12 +20,25 @@ public class DataConverter {
 		// TODO: Add your code to read data from .dat files, create objects
 		//and export them as XML or JSON 
 		
-
+		Scanner in = null;
+		
+		try{
+			in = new Scanner(new FileReader(""));
+		} catch (FileNotFoundException e) {
+			//File not found
+		} finally {
+			in.close();
+		}
+		
+		while(in.hasNext()){
+			in.
+		}
+		
 		/*
 		 * Uncomment the following line to see an example of XML implementation
 		 * using XStream
 		 */
-//		/XMLExample();
+		//XMLExample();
 	}
 
 	/*

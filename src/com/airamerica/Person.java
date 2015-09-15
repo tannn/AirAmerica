@@ -8,6 +8,7 @@ import java.util.List;
 public class Person {
 	
 	private String personCode;
+	private String phoneNumber;
 	
 	/* Note how Address has been used (Composition Relationship) */ 
 	private Address address;
@@ -20,12 +21,12 @@ public class Person {
 	
 
 	// TODO: Add appropriate constructor(s)
-	public Person(String personCode, Address address) {
+	public Person(String personCode, Address address, String phoneNumber) {
 		this.personCode = personCode;
 		this.address = address;
 		this.emails = new ArrayList<String>();
 	}
-	
+
 	// TODO: Add Getters and setters as appropriate
 	public Address getAddress() {
 		return this.address;
@@ -39,6 +40,10 @@ public class Person {
 	// TODO: Add additional methods here
 	public void addEmail(String email) {
 		this.emails.add(email);
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 	
 }
