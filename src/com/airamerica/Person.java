@@ -25,7 +25,6 @@ public class Person {
         this.emails = new ArrayList<String>();
         this.firstName = firstName;
         this.lastName = lastName;
-        
     }
     
     public Person(String personCode, Address address) {

@@ -16,29 +16,59 @@ import com.thoughtworks.xstream.XStream;
 public class DataConverter {
 
 	public static void main(String args[]) {
-
-		// TODO: Add your code to read data from .dat files, create objects
-		//and export them as XML or JSON 
 		
-		Scanner in = null;
+		Scanner personsFile = null;
+		Scanner airportsFile = null;
+		Scanner customersFile = null;
+		Scanner productsFile = null;
 		
 		try{
-			in = new Scanner(new FileReader(""));
+			personsFile = new Scanner(new FileReader("data/persons.dat"));
+			airportsFile = new Scanner(new FileReader("data/airports.dat"));
+			customersFile = new Scanner(new FileReader("data/customers.dat"));
+			productsFile = new Scanner(new FileReader("data/products.dat"));
 		} catch (FileNotFoundException e) {
-			//File not found
+			System.out.println("File not found.");
 		} finally {
-			in.close();
+			personsFile.close();
+			airportsFile.close();
+			customersFile.close();
+			productsFile.close();
 		}
 		
-		while(in.hasNext()){
-			in.
+		int personCount = 0;
+		Person[] people = null;
+		
+		while(personsFile.hasNextLine()){
+			String line = personsFile.nextLine();
+			 if (line.length() <= 5) {
+				people = new Person[Integer.parseInt(line)]; //will this work?
+			} else {
+				String[] personVals = line.split(";");
+				String[] addressField = personVals[2].split(", ");	
+				String[] name = personVals[1].split(", ");
+				Address address = new Address(addressField[0], addressField[1], addressField[2], addressField[3], addressField[4]);
+				people[personCount] = new Person(personVals[0], address, name[1], name[0]);
+				personCount++;
+			}
+		}
+		
+		while(airportsFile.hasNextLine()){
+			String line = airportsFile.nextLine();
+		}
+		
+		while(customersFile.hasNextLine()){
+			String line = customersFile.nextLine();
+		}
+		
+		while(productsFile.hasNextLine()){
+			String line = productsFile.nextLine();
 		}
 		
 		/*
-		 * Uncomment the following line to see an example of XML implementation
-		 * using XStream
+		 * Uncomment the following line to make this work
 		 */
-		//XMLExample();
+		//toXML();
 	}
 
 	/*
@@ -47,7 +77,7 @@ public class DataConverter {
 	 * are exported. NOTE: Pay attention how to alias various properties of an
 	 * object.
 	 */
-	public static void XMLExample() {
+	public static void toXML() {
 		XStream xstream = new XStream();
 
 		Address address1 = new Address("Street1", "City1");

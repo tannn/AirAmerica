@@ -9,6 +9,7 @@ public class Address {
 	private String state;
 	private String zip;
 	private String country;
+	
 //TODO: Add more fields as needed
 
 	/* Constructor - Generated using Eclipse Menu 
