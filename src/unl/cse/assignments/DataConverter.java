@@ -49,7 +49,7 @@ public class DataConverter {
 				if (personVals.length >= 4) {
 					for (int i = 3; i < personVals.length; i++) {
 						if (personVals[i].contains("-")) {
-							people[personCount].setPhoneNumber(personVals[i]);
+							people[personCount].addPhoneNumber(personVals[i]);
 						} else if (personVals[i].contains("@")) {
 							people[personCount].addEmail(personVals[i]);
 						}
@@ -68,7 +68,7 @@ public class DataConverter {
 			if (line.length() <= 5 && line.length() > 0)
 				airports = new Airport[Integer.parseInt(line)];
 			else {
-
+				airportCount++;
 			}
 		}
 
@@ -80,7 +80,14 @@ public class DataConverter {
 			if (line.length() <= 5 && line.length() > 0)
 				customers = new Customer[Integer.parseInt(line)];
 			else {
-
+				String[] customerVals = line.split(";");
+				customers[customerCount] = new Customer(customerVals[0], customerVals[1], customerVals[2], customerVals[3]);
+				
+				if (customerVals.length > 4) {
+					customers[customerCount].setAirlineMiles(customerVals[4]);
+				}
+				
+				customerCount++;
 			}
 		}
 
@@ -92,7 +99,7 @@ public class DataConverter {
 			if (line.length() <= 5 && line.length() > 0)
 				products = new Product[Integer.parseInt(line)];
 			else {
-
+				productCount++;
 			}
 		}
 
@@ -123,7 +130,7 @@ public class DataConverter {
 	public static void toXML() {
 		XStream xstream = new XStream();
 
-		Address address1 = new Address("Street1", "City1, State1, 12345, Country1");
+		Address address1 = new Address("Street1", "City1, State1, Zip1, Country1");
 		Person p1 = new Person("PersonCode1", address1);
 		p1.addEmail("Email1");
 		p1.addEmail("Email2");

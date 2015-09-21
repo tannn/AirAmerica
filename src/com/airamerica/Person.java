@@ -44,7 +44,7 @@ public class Person {
         return personCode;
     }
     
-    public void setPhoneNumber(String phoneNumber) {
+    public void addPhoneNumber(String phoneNumber) {
     	this.phoneNumbers.add(phoneNumber);
     }
 
