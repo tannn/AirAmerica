@@ -17,14 +17,16 @@ public class Person {
      phoneNo etc) */
     private String firstName;
     private String lastName;
+    private List<String> phoneNumbers;
 
     // TODO: Add appropriate constructor(s)
     public Person(String personCode, Address address, String firstName, String lastName) {
         this.personCode = personCode;
         this.address = address;
         this.emails = new ArrayList<String>();
-        this.firstName = firstName;
+        this.firstName = firstName.replaceAll("\\s","");
         this.lastName = lastName;
+        this.phoneNumbers = new ArrayList<String>();
     }
     
     public Person(String personCode, Address address) {
@@ -40,6 +42,10 @@ public class Person {
 
     public String getPersonCode() {
         return personCode;
+    }
+    
+    public void setPhoneNumber(String phoneNumber) {
+    	this.phoneNumbers.add(phoneNumber);
     }
 
     public void setEmails(List<String> emails) {
