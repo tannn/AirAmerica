@@ -68,6 +68,14 @@ public class DataConverter {
 			if (line.length() <= 5 && line.length() > 0)
 				airports = new Airport[Integer.parseInt(line)];
 			else {
+				String[] airportVals = line.split(";");
+				String[] addressVals = airportVals[2].split(";");
+				Address address = new Address(addressVals[0], addressVals[1], addressVals[2], addressVals[3], addressVals[4]);
+				
+				String[] longlat = airportVals[3].split(",");
+				
+				airports[airportCount] = new Airport(airportVals[0], airportVals[1], address, Integer.parseInt(longlat[0]), Integer.parseInt(longlat[1]), Integer.parseInt(longlat[2]), Integer.parseInt(longlat[3]), Integer.parseInt(airportVals[4]));
+				
 				airportCount++;
 			}
 		}
