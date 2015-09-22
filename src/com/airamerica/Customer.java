@@ -9,11 +9,6 @@ public class Customer {
     private String primaryContact;
     private String airlineMiles;
     private String customerType;
-   
-
-    /*TODO: Add other fields as necessary (eg. firstName, lastName,
-     phoneNo etc) */
-    // TODO: Add constructor(s)
     
 //    public Customer(Person cust) {
 //        customerName = cust.getFirstName() + ' ' + cust.getLastName();

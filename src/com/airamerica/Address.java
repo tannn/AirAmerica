@@ -1,7 +1,5 @@
 package com.airamerica;
 
-/* A partial implementation of address of a particular
- * Location */
 public class Address {
 	
 	private String street;
@@ -9,11 +7,6 @@ public class Address {
 	private String state;
 	private String zip;
 	private String country;
-	
-//TODO: Add more fields as needed
-
-	/* Constructor - Generated using Eclipse Menu 
-	 * (Source-> Generate Constructor using fields) */
 
 	public Address(String street, String city, String state, String zip, String country) {
 		this.street = street;
@@ -23,8 +16,6 @@ public class Address {
 		this.country = country.replaceAll("\\s","");
 		}
 
-	/* Getters and Setters - Generated using Eclipse 
-	 * Menu (Source-> Generate Getters and Setters) */	
 	public String getStreet() {
 		return street;
 	}
@@ -65,5 +56,4 @@ public class Address {
 		this.country = country;
 	}
 	
-	/* Additional methods as required */
 }
