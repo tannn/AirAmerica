@@ -29,12 +29,18 @@ public class Customer {
         this.primaryContact = contact;
     }
 
-    /*TODO: Add Getters and setters */
+    public String getAirlineMiles() {
+		return airlineMiles;
+	}
+
+	public String getCustomerType() {
+		return customerType;
+	}
+
     public String getPrimaryContact() {
         return primaryContact;
     }
 
-    //TODO: Add additional methods if needed */
     public String getCustomerCode() {
         return customerCode;
     }
