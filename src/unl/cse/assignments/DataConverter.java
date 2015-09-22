@@ -103,7 +103,21 @@ public class DataConverter {
 			if (line.length() <= 5 && line.length() > 0)
 				products = new Product[Integer.parseInt(line)];
 			else {
-				
+				String[] productVals = line.split(";");
+				if (productVals[1].equals("TS"))
+					products[productCount] = new StandardTicket(productVals[0], productVals[1], productVals[2], productVals[3], productVals[4], productVals[5], productVals[6], productVals[7], productVals[8]);
+				else if (productVals[1].equals("TO"))
+					products[productCount] = new OffseasonTicket(productVals[0], productVals[1], productVals[2], productVals[3], productVals[4], productVals[5], productVals[6], productVals[7], productVals[8], productVals[9], productVals[10], productVals[11]);
+				else if (productVals[1].equals("TA"))
+					products[productCount] = new AwardTicket(productVals[0], productVals[1], productVals[2], productVals[3], productVals[4], productVals[5], productVals[6], productVals[7], productVals[8], productVals[9]);
+				else if (productVals[1].equals("SC"))
+					products[productCount] = new CheckedBaggage(productVals[0], productVals[1], productVals[2]);
+				else if (productVals[1].equals("SI"))
+					products[productCount] = new Insurance(productVals[0], productVals[1], productVals[2], productVals[3], productVals[4]);
+				else if (productVals[1].equals("SR"))
+					products[productCount] = new Refreshments(productVals[0], productVals[1], productVals[2], productVals[3]);
+				else if (productVals[1].equals("SS"))
+					products[productCount] = new SpecialAssistance(productVals[0], productVals[1], productVals[2]);
 				productCount++;
 			}
 		}
