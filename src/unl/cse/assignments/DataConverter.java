@@ -11,13 +11,21 @@ import java.util.Scanner;
 
 // Include imports for XML/JSON libraries if needed
 import com.thoughtworks.xstream.XStream;
-//GSON
-//import com.google.gson.stream.JsonReader;
-//import com.google.gson.stream.JsonToken;
-
 
 public class DataConverter {
 
+                static int personCount = 0;
+		static Person[] people = null;
+                
+                static int airportCount = 0;
+		static Airport[] airports = null;
+                
+                static int productCount = 0;
+		static Product[] products = null;
+                
+                static int customerCount = 0;
+		static Customer[] customers = null;
+    
 	public static void main(String args[]) {
 
 		Scanner personsFile = null;
@@ -33,9 +41,6 @@ public class DataConverter {
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found.");
 		}
-
-		int personCount = 0;
-		Person[] people = null;
 
 		while (personsFile.hasNextLine()) {
 			String line = personsFile.nextLine();
@@ -62,8 +67,7 @@ public class DataConverter {
 			}
 		}
 
-		int airportCount = 0;
-		Airport[] airports = null;
+		
 
 		while (airportsFile.hasNextLine()) {
 			String line = airportsFile.nextLine();
@@ -79,8 +83,7 @@ public class DataConverter {
 			}
 		}
 
-		int customerCount = 0;
-		Customer[] customers = null;
+		
 
 		while (customersFile.hasNextLine()) {
 			String line = customersFile.nextLine();
@@ -95,15 +98,12 @@ public class DataConverter {
 			}
 		}
 
-		int productCount = 0;
-		Product[] products = null;
 
 		while (productsFile.hasNextLine()) {
 			String line = productsFile.nextLine();
 			if (line.length() <= 5 && line.length() > 0)
 				products = new Product[Integer.parseInt(line)];
 			else {
-				
 				productCount++;
 			}
 		}
@@ -112,7 +112,7 @@ public class DataConverter {
 		 * Uncomment the following line to make this work
 		 */
 		// toXML();
-		// output();
+		 output();
 
 		personsFile.close();
 		airportsFile.close();
@@ -121,8 +121,81 @@ public class DataConverter {
 
 	}
 
-	public static void output() { //JSON?
+	public static void output() {
+            
+                XStream xstream = new XStream();
+		
+//                persons output
+		xstream.alias("person", Person.class);
+		PrintWriter pw = null;
+		try {
+			pw = new PrintWriter(new File("data/Persons.xml"));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		pw.print("<persons>\n");
+                for(Person p : people)
+                {
+                    pw.print(xstream.toXML(p));
+                }
+		pw.print("</persons>" + "\n");
+		pw.close();
 
+		System.out.println("XML generated at 'data/Persons.xml'");
+                
+//                airports output
+		xstream.alias("airport", Airport.class);
+		pw = null;
+		try {
+			pw = new PrintWriter(new File("data/Airports.xml"));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		pw.print("<airports>\n");
+                for(Airport a : airports)
+                {
+                    pw.print(xstream.toXML(a));
+                }
+		pw.print("</airports>" + "\n");
+		pw.close();
+
+		System.out.println("XML generated at 'data/Airports.xml'");
+                
+//                customers output
+                xstream.alias("customer", Customer.class);
+		pw = null;
+		try {
+			pw = new PrintWriter(new File("data/Customers.xml"));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		pw.print("<customers>\n");
+                for(Customer c : customers)
+                {
+                    pw.print(xstream.toXML(c));
+                }
+		pw.print("</customers>" + "\n");
+		pw.close();
+
+		System.out.println("XML generated at 'data/Customers.xml'");
+                
+//                products output
+                xstream.alias("product", Product.class);
+		pw = null;
+		try {
+			pw = new PrintWriter(new File("data/Products.xml"));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		pw.print("<products>\n");
+                for(Product p : products)
+                {
+                    pw.print(xstream.toXML(p));
+                }
+		pw.print("</products>" + "\n");
+		pw.close();
+
+		System.out.println("XML generated at 'data/Products.xml'");
 	}
 
 	/*
