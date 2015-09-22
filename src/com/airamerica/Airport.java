@@ -9,10 +9,10 @@ public class Airport {
 	private int airportLatMin;
 	private int aiportLongDeg;
 	private int airportLongMin;
-	private int passengerFacilityFee;
+	private float passengerFacilityFee;
 	
 	public Airport(String airportCode, String airportName, Address airportAddress, int airportLatDeg, int airportLatMin,
-			int aiportLongDeg, int airportLongMin, int passengerFacilityFee) {
+			int aiportLongDeg, int airportLongMin, float passengerFacilityFee) {
 		this.airportCode = airportCode;
 		this.airportName = airportName;
 		this.airportAddress = airportAddress;
@@ -51,7 +51,7 @@ public class Airport {
 		return airportLongMin;
 	}
 
-	public int getPassengerFacilityFee() {
+	public float getPassengerFacilityFee() {
 		return passengerFacilityFee;
 	}
 
