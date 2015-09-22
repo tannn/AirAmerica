@@ -3,7 +3,6 @@ package unl.cse.assignments;
 /* Phase-I */
 import com.airamerica.*;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -17,28 +16,108 @@ public class DataConverter {
 
 	public static void main(String args[]) {
 
-		// TODO: Add your code to read data from .dat files, create objects
-		//and export them as XML or JSON 
-		
-		Scanner in = null;
-		
-		try{
-			in = new Scanner(new FileReader(""));
+		Scanner personsFile = null;
+		Scanner airportsFile = null;
+		Scanner customersFile = null;
+		Scanner productsFile = null;
+
+		try {
+			personsFile = new Scanner(new FileReader("data/persons.dat"));
+			airportsFile = new Scanner(new FileReader("data/airports.dat"));
+			customersFile = new Scanner(new FileReader("data/customers.dat"));
+			productsFile = new Scanner(new FileReader("data/products.dat"));
 		} catch (FileNotFoundException e) {
-			//File not found
-		} finally {
-			in.close();
+			System.out.println("File not found.");
 		}
-		
-		while(in.hasNext()){
-			in.
+
+		int personCount = 0;
+		Person[] people = null;
+
+		while (personsFile.hasNextLine()) {
+			String line = personsFile.nextLine();
+			if (line.length() <= 5 && line.length() > 0) 
+				people = new Person[Integer.parseInt(line)];
+			else {
+				String[] personVals = line.split(";");
+				String[] addressField = personVals[2].split(",");
+				String[] name = personVals[1].split(",");
+				Address address = new Address(addressField[0], addressField[1], addressField[2], addressField[3],
+						addressField[4]);
+				people[personCount] = new Person(personVals[0], address, name[1], name[0]);
+
+				if (personVals.length >= 4) {
+					for (int i = 3; i < personVals.length; i++) {
+						if (personVals[i].contains("-"))
+							people[personCount].addPhoneNumber(personVals[i]);
+						else if (personVals[i].contains("@")) {
+							people[personCount].addEmail(personVals[i]);
+						}
+					}
+				}
+				personCount++;
+			}
 		}
-		
+
+		int airportCount = 0;
+		Airport[] airports = null;
+
+		while (airportsFile.hasNextLine()) {
+			String line = airportsFile.nextLine();
+			if (line.length() <= 5 && line.length() > 0)
+				airports = new Airport[Integer.parseInt(line)];
+			else {
+				String[] airportVals = line.split(";");
+				String[] addressVals = airportVals[2].split(";");
+				Address address = new Address(addressVals[0], addressVals[1], addressVals[2], addressVals[3], addressVals[4]);
+				String[] longlat = airportVals[3].split(",");
+				airports[airportCount] = new Airport(airportVals[0], airportVals[1], address, Integer.parseInt(longlat[0]), Integer.parseInt(longlat[1]), Integer.parseInt(longlat[2]), Integer.parseInt(longlat[3]), Integer.parseInt(airportVals[4]));
+				airportCount++;
+			}
+		}
+
+		int customerCount = 0;
+		Customer[] customers = null;
+
+		while (customersFile.hasNextLine()) {
+			String line = customersFile.nextLine();
+			if (line.length() <= 5 && line.length() > 0)
+				customers = new Customer[Integer.parseInt(line)];
+			else {
+				String[] customerVals = line.split(";");
+				customers[customerCount] = new Customer(customerVals[0], customerVals[1], customerVals[2], customerVals[3]);
+				if (customerVals.length > 4) 
+					customers[customerCount].setAirlineMiles(customerVals[4]);
+				customerCount++;
+			}
+		}
+
+		int productCount = 0;
+		Product[] products = null;
+
+		while (productsFile.hasNextLine()) {
+			String line = productsFile.nextLine();
+			if (line.length() <= 5 && line.length() > 0)
+				products = new Product[Integer.parseInt(line)];
+			else {
+				productCount++;
+			}
+		}
+
 		/*
-		 * Uncomment the following line to see an example of XML implementation
-		 * using XStream
+		 * Uncomment the following line to make this work
 		 */
-		//XMLExample();
+		// toXML();
+		// output();
+
+		personsFile.close();
+		airportsFile.close();
+		customersFile.close();
+		productsFile.close();
+
+	}
+
+	public static void output() { //JSON?
+
 	}
 
 	/*
@@ -47,10 +126,11 @@ public class DataConverter {
 	 * are exported. NOTE: Pay attention how to alias various properties of an
 	 * object.
 	 */
-	public static void XMLExample() {
+
+	public static void toXML() {
 		XStream xstream = new XStream();
 
-		Address address1 = new Address("Street1", "City1");
+		Address address1 = new Address("Street1", "City1", "State1", "Zip1", "Country1");
 		Person p1 = new Person("PersonCode1", address1);
 		p1.addEmail("Email1");
 		p1.addEmail("Email2");

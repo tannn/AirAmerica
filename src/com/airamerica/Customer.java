@@ -6,34 +6,42 @@ public class Customer {
     private String customerName;
     private String customerCode;
     private Address customerAddress;
-    private Person primaryContact;
-   
+    private String primaryContact;
+    private String airlineMiles;
+    private String customerType;
+    
+//    public Customer(Person cust) {
+//        customerName = cust.getFirstName() + ' ' + cust.getLastName();
+//        customerCode = cust.getPersonCode();
+//        customerAddress = cust.getAddress();
+//        primaryContact = cust;
+//    }
 
-    /*TODO: Add other fields as necessary (eg. firstName, lastName,
-     phoneNo etc) */
-    // TODO: Add constructor(s)
-    public Customer(Person cust) {
-        customerName = cust.getFirstName() + ' ' + cust.getLastName();
-        customerCode = cust.getPersonCode();
-        customerAddress = cust.getAddress();
-        primaryContact = cust;
+    public Customer(String code, String type, String contact, String name) {
+        this.customerName = name;
+        this.customerCode = code;
+        this.customerType = type;
+        this.primaryContact = contact;
     }
 
-    public Customer(String name, String code, Address address, Person contact) {
-        customerName = name;
-        customerCode = code;
-        customerAddress = address;
-        primaryContact = contact;
-    }
+    public String getAirlineMiles() {
+		return airlineMiles;
+	}
 
-    /*TODO: Add Getters and setters */
-    public Person getPrimaryContact() {
+	public String getCustomerType() {
+		return customerType;
+	}
+
+    public String getPrimaryContact() {
         return primaryContact;
     }
 
-    //TODO: Add additional methods if needed */
     public String getCustomerCode() {
         return customerCode;
+    }
+    
+    public void setAirlineMiles(String airlineMiles){
+    	this.airlineMiles = airlineMiles;
     }
 
     public Address getCustomerAddress() {
