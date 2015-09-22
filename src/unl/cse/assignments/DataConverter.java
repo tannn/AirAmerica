@@ -3,7 +3,6 @@ package unl.cse.assignments;
 /* Phase-I */
 import com.airamerica.*;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -36,9 +35,9 @@ public class DataConverter {
 
 		while (personsFile.hasNextLine()) {
 			String line = personsFile.nextLine();
-			if (line.length() <= 5 && line.length() > 0) {
+			if (line.length() <= 5 && line.length() > 0) 
 				people = new Person[Integer.parseInt(line)];
-			} else {
+			else {
 				String[] personVals = line.split(";");
 				String[] addressField = personVals[2].split(",");
 				String[] name = personVals[1].split(",");
@@ -48,14 +47,13 @@ public class DataConverter {
 
 				if (personVals.length >= 4) {
 					for (int i = 3; i < personVals.length; i++) {
-						if (personVals[i].contains("-")) {
+						if (personVals[i].contains("-"))
 							people[personCount].addPhoneNumber(personVals[i]);
-						} else if (personVals[i].contains("@")) {
+						else if (personVals[i].contains("@")) {
 							people[personCount].addEmail(personVals[i]);
 						}
 					}
 				}
-
 				personCount++;
 			}
 		}
@@ -71,11 +69,8 @@ public class DataConverter {
 				String[] airportVals = line.split(";");
 				String[] addressVals = airportVals[2].split(";");
 				Address address = new Address(addressVals[0], addressVals[1], addressVals[2], addressVals[3], addressVals[4]);
-				
 				String[] longlat = airportVals[3].split(",");
-				
 				airports[airportCount] = new Airport(airportVals[0], airportVals[1], address, Integer.parseInt(longlat[0]), Integer.parseInt(longlat[1]), Integer.parseInt(longlat[2]), Integer.parseInt(longlat[3]), Integer.parseInt(airportVals[4]));
-				
 				airportCount++;
 			}
 		}
@@ -90,11 +85,8 @@ public class DataConverter {
 			else {
 				String[] customerVals = line.split(";");
 				customers[customerCount] = new Customer(customerVals[0], customerVals[1], customerVals[2], customerVals[3]);
-				
-				if (customerVals.length > 4) {
+				if (customerVals.length > 4) 
 					customers[customerCount].setAirlineMiles(customerVals[4]);
-				}
-				
 				customerCount++;
 			}
 		}
@@ -124,7 +116,7 @@ public class DataConverter {
 
 	}
 
-	public static void output() {
+	public static void output() { //JSON?
 
 	}
 
@@ -138,7 +130,7 @@ public class DataConverter {
 	public static void toXML() {
 		XStream xstream = new XStream();
 
-		Address address1 = new Address("Street1", "City1, State1, Zip1, Country1");
+		Address address1 = new Address("Street1", "City1", "State1", "Zip1", "Country1");
 		Person p1 = new Person("PersonCode1", address1);
 		p1.addEmail("Email1");
 		p1.addEmail("Email2");
