@@ -2,21 +2,26 @@ package unl.cse.assignments;
 
 /* Phase-I */
 import com.airamerica.*;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.Scanner;
-
-// Include imports for XML/JSON libraries if needed
 import com.thoughtworks.xstream.XStream;
-//GSON
-//import com.google.gson.stream.JsonReader;
-//import com.google.gson.stream.JsonToken;
-
 
 public class DataConverter {
+
+	static int personCount = 0;
+	static Person[] people = null;
+
+	static int airportCount = 0;
+	static Airport[] airports = null;
+
+	static int productCount = 0;
+	static Product[] products = null;
+
+	static int customerCount = 0;
+	static Customer[] customers = null;
 
 	public static void main(String args[]) {
 
@@ -34,12 +39,9 @@ public class DataConverter {
 			System.out.println("File not found.");
 		}
 
-		int personCount = 0;
-		Person[] people = null;
-
 		while (personsFile.hasNextLine()) {
 			String line = personsFile.nextLine();
-			if (line.length() <= 5 && line.length() > 0) 
+			if (line.length() <= 5 && line.length() > 0)
 				people = new Person[Integer.parseInt(line)];
 			else {
 				String[] personVals = line.split(";");
@@ -62,9 +64,6 @@ public class DataConverter {
 			}
 		}
 
-		int airportCount = 0;
-		Airport[] airports = null;
-
 		while (airportsFile.hasNextLine()) {
 			String line = airportsFile.nextLine();
 			if (line.length() <= 5 && line.length() > 0)
@@ -72,15 +71,15 @@ public class DataConverter {
 			else {
 				String[] airportVals = line.split(";");
 				String[] addressVals = airportVals[2].split(",");
-				Address address = new Address(addressVals[0], addressVals[1], addressVals[2], addressVals[3], addressVals[4]);
+				Address address = new Address(addressVals[0], addressVals[1], addressVals[2], addressVals[3],
+						addressVals[4]);
 				String[] longlat = airportVals[3].split(",");
-				airports[airportCount] = new Airport(airportVals[0], airportVals[1], address, Integer.parseInt(longlat[0]), Integer.parseInt(longlat[1]), Integer.parseInt(longlat[2]), Integer.parseInt(longlat[3]), Float.parseFloat(airportVals[4]));
+				airports[airportCount] = new Airport(airportVals[0], airportVals[1], address,
+						Integer.parseInt(longlat[0]), Integer.parseInt(longlat[1]), Integer.parseInt(longlat[2]),
+						Integer.parseInt(longlat[3]), Float.parseFloat(airportVals[4]));
 				airportCount++;
 			}
 		}
-
-		int customerCount = 0;
-		Customer[] customers = null;
 
 		while (customersFile.hasNextLine()) {
 			String line = customersFile.nextLine();
@@ -88,15 +87,13 @@ public class DataConverter {
 				customers = new Customer[Integer.parseInt(line)];
 			else {
 				String[] customerVals = line.split(";");
-				customers[customerCount] = new Customer(customerVals[0], customerVals[1], customerVals[2], customerVals[3]);
-				if (customerVals.length > 4) 
+				customers[customerCount] = new Customer(customerVals[0], customerVals[1], customerVals[2],
+						customerVals[3]);
+				if (customerVals.length > 4)
 					customers[customerCount].setAirlineMiles(customerVals[4]);
 				customerCount++;
 			}
 		}
-
-		int productCount = 0;
-		Product[] products = null;
 
 		while (productsFile.hasNextLine()) {
 			String line = productsFile.nextLine();
@@ -105,28 +102,32 @@ public class DataConverter {
 			else {
 				String[] productVals = line.split(";");
 				if (productVals[1].equals("TS"))
-					products[productCount] = new StandardTicket(productVals[0], productVals[1], productVals[2], productVals[3], productVals[4], productVals[5], productVals[6], productVals[7], productVals[8]);
+					products[productCount] = new StandardTicket(productVals[0], productVals[1], productVals[2],
+							productVals[3], productVals[4], productVals[5], productVals[6], productVals[7],
+							productVals[8]);
 				else if (productVals[1].equals("TO"))
-					products[productCount] = new OffseasonTicket(productVals[0], productVals[1], productVals[2], productVals[3], productVals[4], productVals[5], productVals[6], productVals[7], productVals[8], productVals[9], productVals[10], productVals[11]);
+					products[productCount] = new OffseasonTicket(productVals[0], productVals[1], productVals[2],
+							productVals[3], productVals[4], productVals[5], productVals[6], productVals[7],
+							productVals[8], productVals[9], productVals[10], productVals[11]);
 				else if (productVals[1].equals("TA"))
-					products[productCount] = new AwardTicket(productVals[0], productVals[1], productVals[2], productVals[3], productVals[4], productVals[5], productVals[6], productVals[7], productVals[8], productVals[9]);
+					products[productCount] = new AwardTicket(productVals[0], productVals[1], productVals[2],
+							productVals[3], productVals[4], productVals[5], productVals[6], productVals[7],
+							productVals[8], productVals[9]);
 				else if (productVals[1].equals("SC"))
 					products[productCount] = new CheckedBaggage(productVals[0], productVals[1], productVals[2]);
 				else if (productVals[1].equals("SI"))
-					products[productCount] = new Insurance(productVals[0], productVals[1], productVals[2], productVals[3], productVals[4]);
+					products[productCount] = new Insurance(productVals[0], productVals[1], productVals[2],
+							productVals[3], productVals[4]);
 				else if (productVals[1].equals("SR"))
-					products[productCount] = new Refreshments(productVals[0], productVals[1], productVals[2], productVals[3]);
+					products[productCount] = new Refreshments(productVals[0], productVals[1], productVals[2],
+							productVals[3]);
 				else if (productVals[1].equals("SS"))
 					products[productCount] = new SpecialAssistance(productVals[0], productVals[1], productVals[2]);
 				productCount++;
 			}
 		}
 
-		/*
-		 * Uncomment the following line to make this work
-		 */
-		// toXML();
-		// output();
+		output();
 
 		personsFile.close();
 		airportsFile.close();
@@ -135,40 +136,77 @@ public class DataConverter {
 
 	}
 
-	public static void output() { //JSON?
+	public static void output() {
 
-	}
-
-	/*
-	 * An example of using XStream API It exports to "data/Person-example.xml"
-	 * NOTE: It may be interesting to note how compositions (and relationships
-	 * are exported. NOTE: Pay attention how to alias various properties of an
-	 * object.
-	 */
-
-	public static void toXML() {
 		XStream xstream = new XStream();
 
-		Address address1 = new Address("Street1", "City1", "State1", "Zip1", "Country1");
-		Person p1 = new Person("PersonCode1", address1);
-		p1.addEmail("Email1");
-		p1.addEmail("Email2");
-		Person p2 = new Person("PersonCode2", address1);
-		p2.addEmail("Email3");
-		p2.addEmail("Email4");
+		// persons output
 		xstream.alias("person", Person.class);
 		PrintWriter pw = null;
 		try {
-			pw = new PrintWriter(new File("data/Person-example.xml"));
+			pw = new PrintWriter(new File("data/Persons.xml"));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		pw.print("<persons>\n");
-		pw.print(xstream.toXML(p1) + "\n");
-		pw.print(xstream.toXML(p2) + "\n");
+		for (Person p : people) {
+			pw.print(xstream.toXML(p));
+		}
 		pw.print("</persons>" + "\n");
 		pw.close();
 
-		System.out.println("XML generated at 'data/Person-example.xml'");
+		System.out.println("XML generated at 'data/Persons.xml'");
+
+		// airports output
+		xstream.alias("airport", Airport.class);
+		pw = null;
+		try {
+			pw = new PrintWriter(new File("data/Airports.xml"));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		pw.print("<airports>\n");
+		for (Airport a : airports) {
+			pw.print(xstream.toXML(a));
+		}
+		pw.print("</airports>" + "\n");
+		pw.close();
+
+		System.out.println("XML generated at 'data/Airports.xml'");
+
+		// customers output
+		xstream.alias("customer", Customer.class);
+		pw = null;
+		try {
+			pw = new PrintWriter(new File("data/Customers.xml"));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		pw.print("<customers>\n");
+		for (Customer c : customers) {
+			pw.print(xstream.toXML(c));
+		}
+		pw.print("</customers>" + "\n");
+		pw.close();
+
+		System.out.println("XML generated at 'data/Customers.xml'");
+
+		// products output
+		xstream.alias("product", Product.class);
+		pw = null;
+		try {
+			pw = new PrintWriter(new File("data/Products.xml"));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		pw.print("<products>\n");
+		for (Product p : products) {
+			pw.print(xstream.toXML(p));
+		}
+		pw.print("</products>" + "\n");
+		pw.close();
+
+		System.out.println("XML generated at 'data/Products.xml'");
 	}
+
 }
