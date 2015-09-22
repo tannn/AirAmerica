@@ -7,18 +7,18 @@ public class Airport {
 	private Address airportAddress;
 	private int airportLatDeg;
 	private int airportLatMin;
-	private int aiportLongDeg;
+	private int airportLongDeg;
 	private int airportLongMin;
 	private float passengerFacilityFee;
 	
 	public Airport(String airportCode, String airportName, Address airportAddress, int airportLatDeg, int airportLatMin,
-			int aiportLongDeg, int airportLongMin, float passengerFacilityFee) {
+			int airportLongDeg, int airportLongMin, float passengerFacilityFee) {
 		this.airportCode = airportCode;
 		this.airportName = airportName;
 		this.airportAddress = airportAddress;
 		this.airportLatDeg = airportLatDeg;
 		this.airportLatMin = airportLatMin;
-		this.aiportLongDeg = aiportLongDeg;
+		this.airportLongDeg = airportLongDeg;
 		this.airportLongMin = airportLongMin;
 		this.passengerFacilityFee = passengerFacilityFee;
 	}
@@ -44,7 +44,7 @@ public class Airport {
 	}
 
 	public int getAiportLongDeg() {
-		return aiportLongDeg;
+		return airportLongDeg;
 	}
 
 	public int getAirportLongMin() {
