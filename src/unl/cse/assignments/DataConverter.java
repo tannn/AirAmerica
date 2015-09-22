@@ -11,6 +11,10 @@ import java.util.Scanner;
 
 // Include imports for XML/JSON libraries if needed
 import com.thoughtworks.xstream.XStream;
+//GSON
+//import com.google.gson.stream.JsonReader;
+//import com.google.gson.stream.JsonToken;
+
 
 public class DataConverter {
 
@@ -67,10 +71,10 @@ public class DataConverter {
 				airports = new Airport[Integer.parseInt(line)];
 			else {
 				String[] airportVals = line.split(";");
-				String[] addressVals = airportVals[2].split(";");
+				String[] addressVals = airportVals[2].split(",");
 				Address address = new Address(addressVals[0], addressVals[1], addressVals[2], addressVals[3], addressVals[4]);
 				String[] longlat = airportVals[3].split(",");
-				airports[airportCount] = new Airport(airportVals[0], airportVals[1], address, Integer.parseInt(longlat[0]), Integer.parseInt(longlat[1]), Integer.parseInt(longlat[2]), Integer.parseInt(longlat[3]), Integer.parseInt(airportVals[4]));
+				airports[airportCount] = new Airport(airportVals[0], airportVals[1], address, Integer.parseInt(longlat[0]), Integer.parseInt(longlat[1]), Integer.parseInt(longlat[2]), Integer.parseInt(longlat[3]), Float.parseFloat(airportVals[4]));
 				airportCount++;
 			}
 		}
@@ -99,6 +103,7 @@ public class DataConverter {
 			if (line.length() <= 5 && line.length() > 0)
 				products = new Product[Integer.parseInt(line)];
 			else {
+				
 				productCount++;
 			}
 		}
