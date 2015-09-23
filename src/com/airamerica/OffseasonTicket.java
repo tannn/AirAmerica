@@ -1,6 +1,6 @@
 package com.airamerica;
 
-public class OffseasonTicket extends StandardTicket{
+public class OffseasonTicket extends Ticket {
 	
 	private String seasonStartDate;
 	private String seasonEndDate;
