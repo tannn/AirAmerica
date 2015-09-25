@@ -149,15 +149,15 @@ public class DataConverter {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		pw.print("<?xml version=\"1.0\"?>" + "\n");
 		pw.print("<persons>\n");
                 for(Person p : people)
                 {
-                    pw.print(xstream.toXML(p));
+                    pw.print("\t" + xstream.toXML(p) + "\n");
                 }
 		pw.print("</persons>" + "\n");
 		pw.close();
 
-		System.out.println("XML generated at 'data/Persons.xml'");
                 
 //                airports output
 		xstream.alias("airport", Airport.class);
@@ -167,15 +167,14 @@ public class DataConverter {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		pw.print("<?xml version=\"1.0\"?>" + "\n");
 		pw.print("<airports>\n");
                 for(Airport a : airports)
                 {
-                    pw.print(xstream.toXML(a));
+                    pw.print("\t" + xstream.toXML(a) + "\n");
                 }
 		pw.print("</airports>" + "\n");
 		pw.close();
-
-		System.out.println("XML generated at 'data/Airports.xml'");
                 
 //                customers output
                 xstream.alias("customer", Customer.class);
@@ -185,15 +184,14 @@ public class DataConverter {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		pw.print("<?xml version=\"1.0\"?>" + "\n");
 		pw.print("<customers>\n");
                 for(Customer c : customers)
                 {
-                    pw.print(xstream.toXML(c));
+                    pw.print("\t" + xstream.toXML(c) + "\n");
                 }
 		pw.print("</customers>" + "\n");
 		pw.close();
-
-		System.out.println("XML generated at 'data/Customers.xml'");
                 
 //                products output
                 xstream.alias("product", Product.class);
@@ -203,6 +201,7 @@ public class DataConverter {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		pw.print("<?xml version=\"1.0\"?>" + "\n");
 		pw.print("<products>\n");
                 pw.print("<tickets>\n");
                 for(Product p : products)
@@ -210,7 +209,7 @@ public class DataConverter {
                     if(Ticket.class.isInstance(p)&&!AwardTicket.class.isInstance(p)
                             &&!OffseasonTicket.class.isInstance(p)){
                         xstream.alias("ticket", Ticket.class);
-                        pw.print(xstream.toXML(p) + "\n");
+                        pw.print("\t" + xstream.toXML(p) + "\n");
                     }
                 }
                 pw.print("<awardTickets>\n");
@@ -218,7 +217,7 @@ public class DataConverter {
                 {
                     if(AwardTicket.class.isInstance(p)){
                         xstream.alias("awardTicket", AwardTicket.class);
-                        pw.print(xstream.toXML(p) + "\n");
+                        pw.print("\t" + xstream.toXML(p) + "\n");
                     }
                 }
                 pw.print("</awardTickets>" + "\n");
@@ -227,7 +226,7 @@ public class DataConverter {
                 {
                     if(OffseasonTicket.class.isInstance(p)){
                         xstream.alias("offSeasonTicket", OffseasonTicket.class);
-                        pw.print(xstream.toXML(p) + "\n");
+                        pw.print("\t" + xstream.toXML(p) + "\n");
                     }
                 }
                 pw.print("</offSeasonTickets>" + "\n");
@@ -238,7 +237,7 @@ public class DataConverter {
                 {
                     if(CheckedBaggage.class.isInstance(p)){
                         xstream.alias("checkedBaggageService", CheckedBaggage.class);
-                        pw.print(xstream.toXML(p) + "\n");
+                        pw.print("\t" + xstream.toXML(p) + "\n");
                     }   
                 }
                 pw.print("</checkedBaggage>" + "\n");
@@ -247,7 +246,7 @@ public class DataConverter {
                 {
                     if(Insurance.class.isInstance(p)){
                         xstream.alias("insuranceService", Insurance.class);
-                        pw.print(xstream.toXML(p) + "\n");
+                        pw.print("\t" + xstream.toXML(p) + "\n");
                     }   
                 }
                 pw.print("</insurance>" + "\n");
@@ -256,7 +255,7 @@ public class DataConverter {
                 {
                     if(Refreshments.class.isInstance(p)){
                         xstream.alias("refreshmentsService", Refreshments.class);
-                        pw.print(xstream.toXML(p) + "\n");
+                        pw.print("\t" + xstream.toXML(p) + "\n");
                     }   
                 }
                 pw.print("</refreshments>" + "\n");
@@ -265,7 +264,7 @@ public class DataConverter {
                 {
                     if(SpecialAssistance.class.isInstance(p)){
                         xstream.alias("specialAssistanceService", SpecialAssistance.class);
-                        pw.print(xstream.toXML(p) + "\n");
+                        pw.print("\t" + xstream.toXML(p) + "\n");
                     }   
                 }
                 pw.print("</specialAssistance>" + "\n");
@@ -273,39 +272,6 @@ public class DataConverter {
 		pw.print("</products>" + "\n");
 		pw.close();
 
-		System.out.println("XML generated at 'data/Products.xml'");
 	}
 
-	/*
-	 * An example of using XStream API It exports to "data/Person-example.xml"
-	 * NOTE: It may be interesting to note how compositions (and relationships
-	 * are exported. NOTE: Pay attention how to alias various properties of an
-	 * object.
-	 */
-
-	public static void toXML() {
-		XStream xstream = new XStream();
-
-		Address address1 = new Address("Street1", "City1", "State1", "Zip1", "Country1");
-		Person p1 = new Person("PersonCode1", address1);
-		p1.addEmail("Email1");
-		p1.addEmail("Email2");
-		Person p2 = new Person("PersonCode2", address1);
-		p2.addEmail("Email3");
-		p2.addEmail("Email4");
-		xstream.alias("person", Person.class);
-		PrintWriter pw = null;
-		try {
-			pw = new PrintWriter(new File("data/Person-example.xml"));
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		pw.print("<persons>\n");
-		pw.print(xstream.toXML(p1) + "\n");
-		pw.print(xstream.toXML(p2) + "\n");
-		pw.print("</persons>" + "\n");
-		pw.close();
-
-		System.out.println("XML generated at 'data/Person-example.xml'");
-	}
 }
