@@ -1,7 +1,6 @@
 package unl.cse.assignments;
 
 /* Phase-I */
-import com.airamerica.CheckedBaggage;
 import com.airamerica.*;
 
 import java.io.File;
@@ -205,10 +204,72 @@ public class DataConverter {
 			throw new RuntimeException(e);
 		}
 		pw.print("<products>\n");
+                pw.print("<tickets>\n");
                 for(Product p : products)
                 {
-                    pw.print(xstream.toXML(p));
+                    if(Ticket.class.isInstance(p)&&!AwardTicket.class.isInstance(p)
+                            &&!OffseasonTicket.class.isInstance(p)){
+                        xstream.alias("ticket", Ticket.class);
+                        pw.print(xstream.toXML(p) + "\n");
+                    }
                 }
+                pw.print("<awardTickets>\n");
+                for(Product p : products)
+                {
+                    if(AwardTicket.class.isInstance(p)){
+                        xstream.alias("awardTicket", AwardTicket.class);
+                        pw.print(xstream.toXML(p) + "\n");
+                    }
+                }
+                pw.print("</awardTickets>" + "\n");
+                pw.print("<offSeasonTickets>\n");
+                for(Product p : products)
+                {
+                    if(OffseasonTicket.class.isInstance(p)){
+                        xstream.alias("offSeasonTicket", OffseasonTicket.class);
+                        pw.print(xstream.toXML(p) + "\n");
+                    }
+                }
+                pw.print("</offSeasonTickets>" + "\n");
+                pw.print("</tickets>" + "\n");
+                pw.print("<services>\n");
+                pw.print("<checkedBaggage>\n");
+                for(Product p : products)
+                {
+                    if(CheckedBaggage.class.isInstance(p)){
+                        xstream.alias("checkedBaggageService", CheckedBaggage.class);
+                        pw.print(xstream.toXML(p) + "\n");
+                    }   
+                }
+                pw.print("</checkedBaggage>" + "\n");
+                pw.print("<insurance>\n");
+                for(Product p : products)
+                {
+                    if(Insurance.class.isInstance(p)){
+                        xstream.alias("insuranceService", Insurance.class);
+                        pw.print(xstream.toXML(p) + "\n");
+                    }   
+                }
+                pw.print("</insurance>" + "\n");
+                pw.print("<refreshments>\n");
+                for(Product p : products)
+                {
+                    if(Refreshments.class.isInstance(p)){
+                        xstream.alias("refreshmentsService", Refreshments.class);
+                        pw.print(xstream.toXML(p) + "\n");
+                    }   
+                }
+                pw.print("</refreshments>" + "\n");
+                pw.print("<specialAssistance>\n");
+                for(Product p : products)
+                {
+                    if(SpecialAssistance.class.isInstance(p)){
+                        xstream.alias("specialAssistanceService", SpecialAssistance.class);
+                        pw.print(xstream.toXML(p) + "\n");
+                    }   
+                }
+                pw.print("</specialAssistance>" + "\n");
+                pw.print("</services>" + "\n");
 		pw.print("</products>" + "\n");
 		pw.close();
 
