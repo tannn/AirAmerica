@@ -90,7 +90,7 @@ public class DataConverter {
 				String[] customerVals = line.split(";");
 				customers[customerCount] = new Customer(customerVals[0], customerVals[1], customerVals[2], customerVals[3]);
 				if (customerVals.length > 4) 
-					customers[customerCount].setAirlineMiles(customerVals[4]);
+					customers[customerCount].setAirlineMiles(Integer.parseInt(customerVals[4]));
 				customerCount++;
 			}
 		}

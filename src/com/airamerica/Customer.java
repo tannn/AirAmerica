@@ -7,15 +7,8 @@ public class Customer {
     private String customerCode;
     private Address customerAddress;
     private String primaryContact;
-    private String airlineMiles;
+    private int airlineMiles;
     private String customerType;
-    
-//    public Customer(Person cust) {
-//        customerName = cust.getFirstName() + ' ' + cust.getLastName();
-//        customerCode = cust.getPersonCode();
-//        customerAddress = cust.getAddress();
-//        primaryContact = cust;
-//    }
 
     public Customer(String code, String type, String contact, String name) {
         this.customerName = name;
@@ -24,7 +17,7 @@ public class Customer {
         this.primaryContact = contact;
     }
 
-    public String getAirlineMiles() {
+    public int getAirlineMiles() {
 		return airlineMiles;
 	}
 
@@ -40,7 +33,7 @@ public class Customer {
         return customerCode;
     }
     
-    public void setAirlineMiles(String airlineMiles){
+    public void setAirlineMiles(int airlineMiles){
     	this.airlineMiles = airlineMiles;
     }
 
