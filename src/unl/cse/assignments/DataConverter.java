@@ -1,7 +1,6 @@
-package unl.cse.assignments;
+ package unl.cse.assignments;
 
 /* Phase-I */
-import com.airamerica.CheckedBaggage;
 import com.airamerica.*;
 
 import java.io.File;
@@ -35,12 +34,13 @@ public class DataConverter {
 		Scanner productsFile = null;
 
 		try {
-			personsFile = new Scanner(new FileReader("data/persons.dat"));
-			airportsFile = new Scanner(new FileReader("data/airports.dat"));
-			customersFile = new Scanner(new FileReader("data/customers.dat"));
-			productsFile = new Scanner(new FileReader("data/products.dat"));
+			personsFile = new Scanner(new FileReader("data/Persons.dat"));
+			airportsFile = new Scanner(new FileReader("data/Airports.dat"));
+			customersFile = new Scanner(new FileReader("data/Customers.dat"));
+			productsFile = new Scanner(new FileReader("data/Products.dat"));
 		} catch (FileNotFoundException e) {
-			System.out.println("File not found.");
+			e.printStackTrace();
+			System.exit(1);
 		}
 
 		while (personsFile.hasNextLine()) {
@@ -68,8 +68,6 @@ public class DataConverter {
 			}
 		}
 
-		
-
 		while (airportsFile.hasNextLine()) {
 			String line = airportsFile.nextLine();
 			if (line.length() <= 5 && line.length() > 0)
@@ -84,8 +82,6 @@ public class DataConverter {
 			}
 		}
 
-		
-
 		while (customersFile.hasNextLine()) {
 			String line = customersFile.nextLine();
 			if (line.length() <= 5 && line.length() > 0)
@@ -99,16 +95,15 @@ public class DataConverter {
 			}
 		}
 
-
 		while (productsFile.hasNextLine()) {
 			String line = productsFile.nextLine();
 			if (line.length() <= 5 && line.length() > 0)
 				products = new Product[Integer.parseInt(line)];
 			else {
 				String[] productVals = line.split(";");
-				if (productVals[1].equals("TS"))
+				if (productVals[1].equals("TS")) {
 					products[productCount] = new Ticket(productVals[0], productVals[1], productVals[2], productVals[3], productVals[4], productVals[5], productVals[6], productVals[7], productVals[8]);
-				else if (productVals[1].equals("TO"))
+				} else if (productVals[1].equals("TO"))
 					products[productCount] = new OffseasonTicket(productVals[0], productVals[1], productVals[2], productVals[3], productVals[4], productVals[5], productVals[6], productVals[7], productVals[8], productVals[9], productVals[10], productVals[11]);
 				else if (productVals[1].equals("TA"))
 					products[productCount] = new AwardTicket(productVals[0], productVals[1], productVals[2], productVals[3], productVals[4], productVals[5], productVals[6], productVals[7], productVals[8], productVals[9]);
@@ -124,11 +119,6 @@ public class DataConverter {
 			}
 		}
 
-
-		/*
-		 * Uncomment the following line to make this work
-		 */
-		// toXML();
 		 output();
 
 		personsFile.close();
@@ -150,15 +140,15 @@ public class DataConverter {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		pw.print("<?xml version=\"1.0\"?>" + "\n");
 		pw.print("<persons>\n");
                 for(Person p : people)
                 {
-                    pw.print(xstream.toXML(p));
+                    pw.print("\t" + xstream.toXML(p) + "\n");
                 }
 		pw.print("</persons>" + "\n");
 		pw.close();
 
-		System.out.println("XML generated at 'data/Persons.xml'");
                 
 //                airports output
 		xstream.alias("airport", Airport.class);
@@ -168,15 +158,14 @@ public class DataConverter {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		pw.print("<?xml version=\"1.0\"?>" + "\n");
 		pw.print("<airports>\n");
                 for(Airport a : airports)
                 {
-                    pw.print(xstream.toXML(a));
+                    pw.print("\t" + xstream.toXML(a) + "\n");
                 }
 		pw.print("</airports>" + "\n");
 		pw.close();
-
-		System.out.println("XML generated at 'data/Airports.xml'");
                 
 //                customers output
                 xstream.alias("customer", Customer.class);
@@ -186,15 +175,14 @@ public class DataConverter {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		pw.print("<?xml version=\"1.0\"?>" + "\n");
 		pw.print("<customers>\n");
                 for(Customer c : customers)
                 {
-                    pw.print(xstream.toXML(c));
+                    pw.print("\t" + xstream.toXML(c) + "\n");
                 }
 		pw.print("</customers>" + "\n");
 		pw.close();
-
-		System.out.println("XML generated at 'data/Customers.xml'");
                 
 //                products output
                 xstream.alias("product", Product.class);
@@ -204,47 +192,78 @@ public class DataConverter {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		pw.print("<?xml version=\"1.0\"?>" + "\n");
 		pw.print("<products>\n");
+                pw.print("<tickets>\n");
                 for(Product p : products)
                 {
-                    pw.print(xstream.toXML(p));
+                    if(Ticket.class.isInstance(p)&&!AwardTicket.class.isInstance(p)
+                            &&!OffseasonTicket.class.isInstance(p)){
+                        xstream.alias("ticket", Ticket.class);
+                        pw.print("\t" + xstream.toXML(p) + "\n");
+                    }
                 }
+                pw.print("<awardTickets>\n");
+                for(Product p : products)
+                {
+                    if(AwardTicket.class.isInstance(p)){
+                        xstream.alias("awardTicket", AwardTicket.class);
+                        pw.print("\t" + xstream.toXML(p) + "\n");
+                    }
+                }
+                pw.print("</awardTickets>" + "\n");
+                pw.print("<offSeasonTickets>\n");
+                for(Product p : products)
+                {
+                    if(OffseasonTicket.class.isInstance(p)){
+                        xstream.alias("offSeasonTicket", OffseasonTicket.class);
+                        pw.print("\t" + xstream.toXML(p) + "\n");
+                    }
+                }
+                pw.print("</offSeasonTickets>" + "\n");
+                pw.print("</tickets>" + "\n");
+                pw.print("<services>\n");
+                pw.print("<checkedBaggage>\n");
+                for(Product p : products)
+                {
+                    if(CheckedBaggage.class.isInstance(p)){
+                        xstream.alias("checkedBaggageService", CheckedBaggage.class);
+                        pw.print("\t" + xstream.toXML(p) + "\n");
+                    }   
+                }
+                pw.print("</checkedBaggage>" + "\n");
+                pw.print("<insurance>\n");
+                for(Product p : products)
+                {
+                    if(Insurance.class.isInstance(p)){
+                        xstream.alias("insuranceService", Insurance.class);
+                        pw.print("\t" + xstream.toXML(p) + "\n");
+                    }   
+                }
+                pw.print("</insurance>" + "\n");
+                pw.print("<refreshments>\n");
+                for(Product p : products)
+                {
+                    if(Refreshments.class.isInstance(p)){
+                        xstream.alias("refreshmentsService", Refreshments.class);
+                        pw.print("\t" + xstream.toXML(p) + "\n");
+                    }   
+                }
+                pw.print("</refreshments>" + "\n");
+                pw.print("<specialAssistance>\n");
+                for(Product p : products)
+                {
+                    if(SpecialAssistance.class.isInstance(p)){
+                        xstream.alias("specialAssistanceService", SpecialAssistance.class);
+                        pw.print("\t" + xstream.toXML(p) + "\n");
+                    }   
+                }
+                pw.print("</specialAssistance>" + "\n");
+                pw.print("</services>" + "\n");
 		pw.print("</products>" + "\n");
 		pw.close();
 
-		System.out.println("XML generated at 'data/Products.xml'");
 	}
 
-	/*
-	 * An example of using XStream API It exports to "data/Person-example.xml"
-	 * NOTE: It may be interesting to note how compositions (and relationships
-	 * are exported. NOTE: Pay attention how to alias various properties of an
-	 * object.
-	 */
-
-	public static void toXML() {
-		XStream xstream = new XStream();
-
-		Address address1 = new Address("Street1", "City1", "State1", "Zip1", "Country1");
-		Person p1 = new Person("PersonCode1", address1);
-		p1.addEmail("Email1");
-		p1.addEmail("Email2");
-		Person p2 = new Person("PersonCode2", address1);
-		p2.addEmail("Email3");
-		p2.addEmail("Email4");
-		xstream.alias("person", Person.class);
-		PrintWriter pw = null;
-		try {
-			pw = new PrintWriter(new File("data/Person-example.xml"));
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		pw.print("<persons>\n");
-		pw.print(xstream.toXML(p1) + "\n");
-		pw.print(xstream.toXML(p2) + "\n");
-		pw.print("</persons>" + "\n");
-		pw.close();
-
-		System.out.println("XML generated at 'data/Person-example.xml'");
-	}
 }
+
