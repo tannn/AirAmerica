@@ -7,7 +7,7 @@ public class Customer {
     private String customerCode;
     private Address customerAddress;
     private String primaryContact;
-    private String airlineMiles;
+    private int airlineMiles;
     private String customerType;
     
 //    public Customer(Person cust) {
@@ -24,7 +24,7 @@ public class Customer {
         this.primaryContact = contact;
     }
 
-    public String getAirlineMiles() {
+    public int getAirlineMiles() {
 		return airlineMiles;
 	}
 
@@ -40,7 +40,7 @@ public class Customer {
         return customerCode;
     }
     
-    public void setAirlineMiles(String airlineMiles){
+    public void setAirlineMiles(int airlineMiles){
     	this.airlineMiles = airlineMiles;
     }
 

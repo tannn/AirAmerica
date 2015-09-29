@@ -5,14 +5,14 @@ public class Address {
 	private String street;
 	private String city;
 	private String state;
-	private String zip;
+	private int zip;
 	private String country;
 
 	public Address(String street, String city, String state, String zip, String country) {
 		this.street = street;
 		this.city = city.replaceAll("\\s","");
 		this.state = state.replaceAll("\\s","");
-		this.zip = zip.replaceAll("\\s","");
+		this.zip = Integer.parseInt(zip.replaceAll("\\s",""));
 		this.country = country.replaceAll("\\s","");
 		}
 
@@ -40,11 +40,11 @@ public class Address {
 		this.state = state;
 	}
 	
-	public String getZip() {
+	public int getZip() {
 		return zip;
 	}
 	
-	public void setZip(String zip) {
+	public void setZip(int zip) {
 		this.zip = zip;
 	}
 	
