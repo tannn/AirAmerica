@@ -9,13 +9,6 @@ public class Customer {
     private String primaryContact;
     private int airlineMiles;
     private String customerType;
-    
-//    public Customer(Person cust) {
-//        customerName = cust.getFirstName() + ' ' + cust.getLastName();
-//        customerCode = cust.getPersonCode();
-//        customerAddress = cust.getAddress();
-//        primaryContact = cust;
-//    }
 
     public Customer(String code, String type, String contact, String name) {
         this.customerName = name;
