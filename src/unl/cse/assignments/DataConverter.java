@@ -1,4 +1,4 @@
-package unl.cse.assignments;
+ package unl.cse.assignments;
 
 /* Phase-I */
 import com.airamerica.*;
@@ -34,12 +34,13 @@ public class DataConverter {
 		Scanner productsFile = null;
 
 		try {
-			personsFile = new Scanner(new FileReader("data/persons.dat"));
-			airportsFile = new Scanner(new FileReader("data/airports.dat"));
-			customersFile = new Scanner(new FileReader("data/customers.dat"));
-			productsFile = new Scanner(new FileReader("data/products.dat"));
+			personsFile = new Scanner(new FileReader("data/Persons.dat"));
+			airportsFile = new Scanner(new FileReader("data/Airports.dat"));
+			customersFile = new Scanner(new FileReader("data/Customers.dat"));
+			productsFile = new Scanner(new FileReader("data/Products.dat"));
 		} catch (FileNotFoundException e) {
-			System.out.println("File not found.");
+			e.printStackTrace();
+			System.exit(1);
 		}
 
 		while (personsFile.hasNextLine()) {
@@ -67,8 +68,6 @@ public class DataConverter {
 			}
 		}
 
-		
-
 		while (airportsFile.hasNextLine()) {
 			String line = airportsFile.nextLine();
 			if (line.length() <= 5 && line.length() > 0)
@@ -83,8 +82,6 @@ public class DataConverter {
 			}
 		}
 
-		
-
 		while (customersFile.hasNextLine()) {
 			String line = customersFile.nextLine();
 			if (line.length() <= 5 && line.length() > 0)
@@ -98,16 +95,15 @@ public class DataConverter {
 			}
 		}
 
-
 		while (productsFile.hasNextLine()) {
 			String line = productsFile.nextLine();
 			if (line.length() <= 5 && line.length() > 0)
 				products = new Product[Integer.parseInt(line)];
 			else {
 				String[] productVals = line.split(";");
-				if (productVals[1].equals("TS"))
+				if (productVals[1].equals("TS")) {
 					products[productCount] = new Ticket(productVals[0], productVals[1], productVals[2], productVals[3], productVals[4], productVals[5], productVals[6], productVals[7], productVals[8]);
-				else if (productVals[1].equals("TO"))
+				} else if (productVals[1].equals("TO"))
 					products[productCount] = new OffseasonTicket(productVals[0], productVals[1], productVals[2], productVals[3], productVals[4], productVals[5], productVals[6], productVals[7], productVals[8], productVals[9], productVals[10], productVals[11]);
 				else if (productVals[1].equals("TA"))
 					products[productCount] = new AwardTicket(productVals[0], productVals[1], productVals[2], productVals[3], productVals[4], productVals[5], productVals[6], productVals[7], productVals[8], productVals[9]);
@@ -123,11 +119,6 @@ public class DataConverter {
 			}
 		}
 
-
-		/*
-		 * Uncomment the following line to make this work
-		 */
-		// toXML();
 		 output();
 
 		personsFile.close();
@@ -275,3 +266,4 @@ public class DataConverter {
 	}
 
 }
+
