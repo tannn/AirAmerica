@@ -6,6 +6,8 @@ package unl.cse.assignments;
 
 public class InvoiceReport {
 	
+	private List<Invoice> invoices;
+	
 	private String generateSummaryReport() {
 		StringBuilder sb = new StringBuilder();
 		
@@ -65,6 +67,24 @@ public class InvoiceReport {
 	public static void main(String args[]) {
 		
 		InvoiceReport ir = new InvoiceReport();
+		
+		Scanner invoiceFile = null;
+
+		try {
+			invoiceFile = new Scanner(new FileReader("data/invoices.dat"));
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found.");
+		}
+		
+                while (invoiceFile.hasNextLine()) {
+                    String line = invoiceFile.nextLine();
+                    if (!(line.length() <= 5 && line.length() > 0)){
+                        String[] invoice = line.split(";");
+                        String[] productInfo = invoice[4].split(",");
+                        ir.invoices.add(new Invoice(invoice[0], invoice[1], invoice[2], invoice[3], productInfo));
+                    }
+                }
+                
 		String summary = ir.generateSummaryReport();
 		String details = ir.generateDetailReport();
 		String travelSummary = ir.getTravelSummary();
