@@ -67,6 +67,8 @@ public class InvoiceReport {
 		InvoiceReport ir = new InvoiceReport();
 		String summary = ir.generateSummaryReport();
 		String details = ir.generateDetailReport();
+		String travelSummary = ir.getTravelSummary();
+		String costSummary = ir.getCostSummary();
 				
 		System.out.println(summary);
 		System.out.println("\n\n");
