@@ -12,7 +12,7 @@ import java.util.Scanner;
  *
  * @author EPiquette
  */
-public class Insurance extends Service{
+public class Insurance extends Services{
         
         private String name;
 	private String ageClass;
