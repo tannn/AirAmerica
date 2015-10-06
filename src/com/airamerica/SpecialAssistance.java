@@ -4,7 +4,7 @@ package com.airamerica;
  *
  * @author EPiquette
  */
-public class SpecialAssistance extends Service{
+public class SpecialAssistance extends Services{
     
     private String typeOfService;
 
