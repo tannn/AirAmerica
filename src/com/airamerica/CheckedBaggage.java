@@ -9,7 +9,7 @@ import java.util.Scanner;
  *
  * @author EPiquette
  */
-public class CheckedBaggage extends Service {
+public class CheckedBaggage extends Services {
 
     private String ticketCode;
     private int quantity;
