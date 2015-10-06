@@ -7,27 +7,35 @@ import java.util.List;
 
 public class Person {
 	
-	private String personCode;
-
-    /* Note how Address has been used (Composition Relationship) */
+    private String personCode;
     private Address address;
-    /* Note how email is used (a collection of variable size) */
     private List<String> emails;
-    /*TODO: Add other fields as necessary (eg. firstName, lastName,
-     phoneNo etc) */
     private String firstName;
     private String lastName;
-    private List<String> phoneNumbers;
+    private String phoneNumber;
+    private int age;
+    private String nationality;
+    private String identityNumber;
 
     // TODO: Add appropriate constructor(s)
-    public Person(String personCode, Address address, String firstName, String lastName) {
+    public Person(String personCode, Address address, String firstName, String lastName,
+            String phoneNumber, int age, String nationality, String identityNumber) {
         this.personCode = personCode;
         this.address = address;
         this.emails = new ArrayList<String>();
         this.firstName = firstName.replaceAll("\\s","");
         this.lastName = lastName;
-        this.phoneNumbers = new ArrayList<String>();
+        this.phoneNumber = phoneNumber;
+        this.age = age;
+        this.nationality = nationality;
+        this.identityNumber = identityNumber;
     }
+
+    public Person(String personCode, String identityNumber, int age, String nationality) {
+        
+    }
+    
+    
     
     public Person(String personCode, Address address) {
         this.personCode = personCode;
@@ -42,10 +50,6 @@ public class Person {
 
     public String getPersonCode() {
         return personCode;
-    }
-    
-    public void addPhoneNumber(String phoneNumber) {
-    	this.phoneNumbers.add(phoneNumber);
     }
 
     public void setEmails(List<String> emails) {
@@ -64,5 +68,25 @@ public class Person {
     public String getLastName() {
         return lastName;
     }
+
+    public int getAge() {
+        return age;
+    }
+
+    public String getIdentityNumber() {
+        return identityNumber;
+    }
+
+    public String getNationality() {
+        return nationality;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+    
+    
+    
+    
 	
 }
