@@ -8,7 +8,7 @@ import java.util.Scanner;
  *
  * @author EPiquette
  */
-public class Refreshments extends Service {
+public class Refreshments extends Services {
     
     
 	private String name;
