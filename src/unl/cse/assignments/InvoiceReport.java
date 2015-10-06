@@ -2,6 +2,8 @@ package unl.cse.assignments;
 
 /* Assignment 3,5 and 6 (Project Phase-II,IV and V) */
 
+//bonus: output in sorted last, first format
+
 public class InvoiceReport {
 	
 	private String generateSummaryReport() {
@@ -9,9 +11,13 @@ public class InvoiceReport {
 		
 		sb.append("Executive Summary Report\n");
 		sb.append("=========================\n");
-		
+		sb.append("Invoice\tCustomer\t\t\t\t\t\t\t\t\tSalesperson\t\tSubtotal\tFees\tTaxes\tDiscount\tTotal");
 		//TODO: Add code for generating summary of all Invoices
-		
+		//for-loop through all invoices
+		//for each invoice, do: invoice, customer, salesperson, subtotal, fees, taxes, discount, total
+		sb.append("=====================================================================================================================================================");
+		sb.append("TOTALS\t\t\t\t\t\t\t\t\t\t\t\t\t");
+
 		return sb.toString();
 	}
 	
@@ -20,6 +26,7 @@ public class InvoiceReport {
 		StringBuilder sb = new StringBuilder();
 		sb.append("FLIGHT INFORMATION");
 		sb.append("==================================================\n");
+		sb.append("DATE\t\tFLIGHT\tCLASS\tDEPARTURE CITY AND TIME\tARRIVAL CITY AND TIME\t\tAIRCRAFT");
 
 		//TODO: Add code for generating Travel Information of an Invoice
 		
@@ -31,6 +38,7 @@ public class InvoiceReport {
 		StringBuilder sb = new StringBuilder();
 		sb.append("FARES AND SERVICES");
 		sb.append("==================================================\n");
+		sb.append("Code\tItem\t\t\t\t\t\t\t\t\tSubTotal\tTax\tTotal\n");
 
 		//TODO: Add code for generating Cost Summary of all 
 		//products and services in an Invoice
@@ -46,7 +54,9 @@ public class InvoiceReport {
 	
 	/* TODO: Loop through all invoices and call the getTravelSummary() and 
 	getCostSummary() for each invoice*/
-	
+	//for-loop through all invoices
+	//for each invoice, do:
+	//
 	
 	
 	return sb.toString();
