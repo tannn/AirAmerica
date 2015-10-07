@@ -1,112 +1,46 @@
 package com.airamerica;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-/*
-/* A partial implementation representing a 
- * Person */
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
-public class Person {
-	
-    private String personCode;
-    private Address address;
-    private List<String> emails;
-    private String firstName;
-    private String lastName;
-    private String phoneNumber;
-    private int age;
-    private String nationality;
-    private String identityNumber;
+public class Product {
 
-    public Person(String personCode, Address address, String firstName, String lastName,
-            String phoneNumber, int age, String nationality, String identityNumber) {
-        this.personCode = personCode;
-        this.address = address;
-        this.emails = new ArrayList<String>();
-        this.firstName = firstName.replaceAll("\\s","");
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.age = age;
-        this.nationality = nationality;
-        this.identityNumber = identityNumber;
-    }
+	private String productCode;
+	private String productType;
 
-    public Person(String personCode, String identityNumber, int age, String nationality) {
-        
-    }
-    
-    
-    
-    public Person(String personCode, Address address) {
-        this.personCode = personCode;
-        this.address = address;
-        this.emails = new ArrayList<String>(); 
-    }
+	public Product(String productCode, String productType) {
+		this.productCode = productCode;
+		this.productType = productType;
+	}
 
-    // TODO: Add Getters and setters as appropriate
-    public Address getAddress() {
-        return this.address;
-    }
+	public String getProductCode() {
+		return productCode;
+	}
 
-    public String getPersonCode() {
-        return personCode;
-    }
+	public String getProductType() {
+		return productType;
+	}
 
-    public void setEmails(List<String> emails) {
-        this.emails = emails;
-    }
-
-    // TODO: Add additional methods here
-    public void addEmail(String email) {
-        this.emails.add(email);
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public String getIdentityNumber() {
-        return identityNumber;
-    }
-
-    public String getNationality() {
-        return nationality;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-    
-    /**
-     * 
-     * @param code
-     * @return
-     */
-	public static String getPersonName(String code) {
-		Scanner personFile = null;
+	/**
+	 * @param code
+	 * @return
+	 */
+	public static String getProductType(String code) {
+		System.out.println("Checking for: " + code);
+		Scanner productFile = null;
 		try {
-			personFile = new Scanner(new FileReader("data/Persons.dat"));
+			productFile = new Scanner(new FileReader("data/Products.dat"));
 		} catch (FileNotFoundException e) {
-			System.out.println("data/persons.dat not found.");
+			System.out.println("data/Products.dat not found.");
 		}
-		while (personFile.hasNextLine()) {
-			String line = personFile.nextLine();
-			String[] personData = line.split(";");
-			if(personData[0].equals(code)) {
-				return personData[1];
-			}
+		while (productFile.hasNextLine()) {
+			String line = productFile.nextLine();
+			String[] productData = line.split(";");
+			if (productData[0].equals(code))
+				return productData[1]; //for some reason, this results in a NullPointerException
 		}
 		return null;
 	}
-    
+
 }
