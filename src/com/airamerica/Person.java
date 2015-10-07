@@ -1,9 +1,12 @@
 package com.airamerica;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 /*
 /* A partial implementation representing a 
  * Person */
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Person {
 	
@@ -17,7 +20,6 @@ public class Person {
     private String nationality;
     private String identityNumber;
 
-    // TODO: Add appropriate constructor(s)
     public Person(String personCode, Address address, String firstName, String lastName,
             String phoneNumber, int age, String nationality, String identityNumber) {
         this.personCode = personCode;
@@ -85,8 +87,26 @@ public class Person {
         return phoneNumber;
     }
     
+    /**
+     * 
+     * @param code
+     * @return
+     */
+	public static String getPersonName(String code) {
+		Scanner personFile = null;
+		try {
+			personFile = new Scanner(new FileReader("data/Persons.dat"));
+		} catch (FileNotFoundException e) {
+			System.out.println("data/persons.dat not found.");
+		}
+		while (personFile.hasNextLine()) {
+			String line = personFile.nextLine();
+			String[] personData = line.split(";");
+			if(personData[0].equals(code)) {
+				return personData[1];
+			}
+		}
+		return null;
+	}
     
-    
-    
-	
 }
