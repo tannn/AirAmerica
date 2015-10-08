@@ -2,7 +2,7 @@ package unl.cse.assignments;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import com.airamerica.AwardTicket;
@@ -22,7 +22,7 @@ import com.airamerica.Ticket;
 
 public class InvoiceReport {
 
-	private List<Invoice> invoices;
+	private ArrayList<Invoice> invoices = new ArrayList<Invoice>();
 
 	/**
 	 * @return
