@@ -114,5 +114,21 @@ public class Ticket extends Product {
 	public String getTicketNote() {
 		return ticketNote;
 	}
+	
+	    public double calculatePrice()
+    {
+        Airport arr = Airport.getAirport(arrAirportCode);
+        Airport dep = Airport.getAirport(depAirportCode);
+        double dist = Haversine.getMiles(dep.getAirportLatDeg(), dep.getAirportLatMin(),
+                    dep.getAiportLongDeg(), dep.getAirportLongMin(), arr.getAirportLatDeg(),
+                    arr.getAirportLatMin(), arr.getAiportLongDeg(), arr.getAirportLongMin());
+        if(flightClass == "EP"){
+            return dist*0.2;
+        }else if(flightClass == "BC"){
+            return dist*0.5;
+        }else{
+            return dist*0.15;
+        }
+    }
 
 }
