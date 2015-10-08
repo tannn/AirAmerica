@@ -15,6 +15,7 @@ import com.airamerica.Person;
 import com.airamerica.Product;
 import com.airamerica.Refreshment;
 import com.airamerica.Ticket;
+import com.airamerica.utils.StandardUtils;
 
 /* Assignment 3,5 and 6 (Project Phase-II,IV and V) */
 
@@ -172,8 +173,8 @@ public class InvoiceReport {
 			System.out.println();
 			System.out.println(
 					"--------------------------------------------------------------------------------------------------------\n");
-			System.out.println("AIR AMERICA\n");
-			System.out.println("ISSUED: " + ir.invoices.get(i).getInvoiceDate() + "\n");
+			System.out.println("AIR AMERICA\t\t\t\t\t\tPNR\n");
+			System.out.println("ISSUED: " + ir.invoices.get(i).getInvoiceDate() + "\t\t\t\t\t" + StandardUtils.generatePNR() + "\n");
 			System.out.println(
 					"--------------------------------------------------------------------------------------------------------\n");
 			System.out.println(travelSummary);
