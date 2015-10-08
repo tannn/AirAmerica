@@ -11,10 +11,10 @@ import java.util.Scanner;
 public class Refreshment extends Services {
 
 	private String name;
-	private String cost;
+	private double cost;
 	private int quantity;
 
-	public Refreshment(String productCode, String name, String cost, int quantity) {
+	public Refreshment(String productCode, String name, double cost, int quantity) {
 		super(productCode, "SR");
 		this.name = name;
 		this.cost = cost;
@@ -34,7 +34,7 @@ public class Refreshment extends Services {
 			String[] productData = line.split(";");
 			if (productCode.equals(productData[0]) && "SR".equals(productData[1])) {
 				this.name = productData[2];
-				this.cost = productData[3];
+				this.cost = Double.parseDouble(productData[3]);
 			}
 		}
 	}
@@ -43,8 +43,18 @@ public class Refreshment extends Services {
 		return name;
 	}
 
-	public String getCost() {
+	public double getCost() {
 		return cost;
+	}
+
+	@Override
+	public double calculatePrice() {
+		return quantity * cost;
+	}
+
+	@Override
+	public double calculateTax() {
+		return calculatePrice() * .04;
 	}
 
 }
