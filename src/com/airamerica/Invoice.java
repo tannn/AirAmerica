@@ -27,6 +27,7 @@ public class Invoice {
 			String[] productInvoice = s.split(":");
 			if (Product.getProductType(productInvoice[0]).equals("TS")) {
 				products.add(new Ticket(
+						//Why skip productInvoice[2]? This causes a NullPointerException
 						productInvoice[0], "TS", productInvoice[1], productInvoice[3], new Person(productInvoice[4],
 								productInvoice[5], Integer.parseInt(productInvoice[6]), productInvoice[7]),
 						productInvoice[8]));
@@ -68,7 +69,7 @@ public class Invoice {
 
 	/**
 	 * 
-	 * @return
+	 * @return The name (Last, First) of the salesperson
 	 */
 	public String getSalesperson() {
 		if (salespersonCode.equalsIgnoreCase("online")) {
