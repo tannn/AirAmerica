@@ -41,4 +41,8 @@ public class CheckedBaggage extends Services {
     public String getTicketCode() {
         return ticketCode;
     }
+    
+    public int getQuantity() {
+    	return quantity;
+    }
 }

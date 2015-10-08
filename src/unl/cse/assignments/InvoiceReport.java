@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.airamerica.AwardTicket;
+import com.airamerica.CheckedBaggage;
 import com.airamerica.Customer;
 import com.airamerica.Insurance;
 import com.airamerica.Invoice;
 import com.airamerica.OffseasonTicket;
 import com.airamerica.Person;
 import com.airamerica.Product;
+import com.airamerica.Refreshment;
 import com.airamerica.Ticket;
 
 /* Assignment 3,5 and 6 (Project Phase-II,IV and V) */
@@ -90,13 +92,24 @@ public class InvoiceReport {
 		for (Product x : invoices.get(invoiceListNum).getProducts()) {
 			sb.append(x.getProductCode() + "\t");
 			if (x instanceof AwardTicket) {
-				//Extra line containing # of units, @ reward miles/unit && $30 redemption fee
+				//TODO: Extra line containing # of units, @ reward miles/unit && $30 redemption fee
+				sb.append("AwardTicket(" + ((AwardTicket) x).getClass() + ") " + ((AwardTicket) x).getDepAirportCode() + " to " + ((AwardTicket) x).getArrAirportCode() + " (" + /* miles */ + " miles)"); //TODO: pricing
+				sb.append(/**/" unit(s) @ " + /* reward miles */ + " reward miles/unit with $30 redemption fee)" );
 			} else if (x instanceof OffseasonTicket) {
-				//Extra line containing # of units, @ cost/unit && $20 redemption fee
+				//TODO: Extra line containing # of units, @ cost/unit && $20 redemption fee
+				sb.append("OffseasonTicket(" + ((OffseasonTicket) x).getClass() + ") " + ((OffseasonTicket) x).getDepAirportCode() + " to " + ((OffseasonTicket) x).getArrAirportCode() + " (" + /* miles */ + " miles)"); //TODO: pricing, % off
+				sb.append(/**/" unit(s) @ " + /* cost */ + "unit with $20 fee)" );
 			} else if (x instanceof Ticket) {
-				//Extra line containing # of units, @ cost/unit
+				//TODO: Extra line containing # of units, @ cost/unit
+				sb.append("StandardTicket(" + ((Ticket) x).getClass() + ") " + ((Ticket) x).getDepAirportCode() + " to " + ((Ticket) x).getArrAirportCode() + " (" + /* miles */ + " miles)"); //TODO: pricing, % off
+				sb.append(/**/" unit(s) @ " + /* cost */ + "unit)" );
 			} else if (x instanceof Insurance) {
-				//Extra line containing # of units, @ cost/unit * miles
+				//TODO: Extra line containing # of units, @ cost/unit * miles
+				sb.append("Insurance " + ((Insurance) x).getName() + " (" /* age range */ + ")");
+			} else if (x instanceof CheckedBaggage) {
+				sb.append("Baggage (" + ((CheckedBaggage) x).getQuantity() + " unit(s) @ $25.00 for first and $35.00 onwards)"); //TODO: pricing
+			} else if (x instanceof Refreshment) {
+				sb.append(((Refreshment) x).getName() + " (" + /*#*/ + " unit(s) @ " + /* price */ + "/unit)");
 			}
 		}
 		// TODO: Add code for generating Cost Summary of all
