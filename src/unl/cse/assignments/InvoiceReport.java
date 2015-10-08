@@ -5,7 +5,12 @@ import java.io.FileReader;
 import java.util.List;
 import java.util.Scanner;
 
+import com.airamerica.AwardTicket;
+import com.airamerica.Customer;
+import com.airamerica.Insurance;
 import com.airamerica.Invoice;
+import com.airamerica.OffseasonTicket;
+import com.airamerica.Person;
 import com.airamerica.Product;
 import com.airamerica.Ticket;
 
@@ -26,10 +31,10 @@ public class InvoiceReport {
 		sb.append("Executive Summary Report\n");
 		sb.append("=========================\n");
 		sb.append("Invoice\tCustomer\t\t\t\t\t\t\t\t\tSalesperson\t\tSubtotal\tFees\tTaxes\tDiscount\tTotal\n");
-		// TODO: Add code for generating summary of all Invoices
-		// for-loop through all invoices
-		// for each invoice, do: invoice, customer, salesperson, subtotal, fees,
-		// taxes, discount, total
+		// TODO:  subtotal, fees, taxes, discount, total
+		for (Invoice i : invoices) {
+			sb.append(i.getInvoiceCode() + "\t" + Customer.getCustomerName(i.getCustomerCode()) + " " + Customer.getCustomerType(i.getCustomerCode()) + "\t\t\t\t\t\t\t" + i.getSalesperson() + "\t\t");
+		}
 		sb.append(
 				"=====================================================================================================================================================\n");
 		sb.append("TOTALS\t\t\t\t\t\t\t\t\t\t\t\t\t");
@@ -38,7 +43,7 @@ public class InvoiceReport {
 	}
 
 	/**
-	 * @param invoiceListNum
+	 * @param invoiceListNum The position of invoice in the array
 	 * @return
 	 */
 	private String getTravelSummary(int invoiceListNum) {
@@ -53,54 +58,67 @@ public class InvoiceReport {
 				//TODO: need proper way to get arrival/departure city
 				sb.append(b.getDate() + "\t\t" + b.getFlightNo() + "\t" + b.getFlightClass() + "\t" + b.getDepAirportCode() + "\t" + b.getArrAirportCode() + "\t\t" + b.getAircraftType() + "\n");
 				sb.append("\t\t\t\t\t\t\t(" + b.getDepAirportCode() + ") " + b.getDepTime() + "\t\t\t (" + b.getArrAirportCode() + ") " + b.getArrTime() + "\n");
-				sb.append("\t\tTRAVELER\t\t\t\tAGE\tSEAT NO.\n");
+				sb.append("\t\tTRAVELER\t\t\t\tAGE\tSEAT NO.\n"); //TODO: May need another for loop for all the passengers
 				
 				
 				
 			}
 		}
+		//Get customer number and get contact person number for output
+		String customerCode = invoices.get(invoiceListNum).getCustomerCode();
+		String primaryContactCode = Customer.getCustomerContactCode(customerCode);
 		sb.append("CUSTOMER INFORMATION:\n");
-		sb.append("\t"); //TODO: company name and customer number
-		sb.append("\t"); //TODO: corporate, gov, gen
-		sb.append("\t"); //TODO: contact person name
-		sb.append("\t"); //TODO: contact person address
-		sb.append("\t"); //TODO: contact person country, state zip etc
+		sb.append("\t" + Customer.getCustomerName(customerCode) + " (" + customerCode + ")" + "\n");
+		sb.append("\t" + Customer.getCustomerType(customerCode) + "\n");
+		sb.append("\t" + Person.getContactInfo(primaryContactCode) + "\n");
 		sb.append("SALESPERSON: " + invoices.get(invoiceListNum).getSalesperson() + "\n");
+		System.out.println(
+				"--------------------------------------------------------------------------------------------------------\n");
 		return sb.toString();
 
 	}
 
 	/**
-	 * @param invoiceCode
+	 * @param invoiceCode Code of invoice
 	 * @return
 	 */
-	private String getCostSummary(int invoiceCode) {
+	private String getCostSummary(int invoiceListNum) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("FARES AND SERVICES\n");
 		sb.append("==================================================\n");
 		sb.append("Code\tItem\t\t\t\t\t\t\t\t\tSubTotal\tTax\tTotal\n");
-
+		for (Product x : invoices.get(invoiceListNum).getProducts()) {
+			sb.append(x.getProductCode() + "\t");
+			if (x instanceof AwardTicket) {
+				//Extra line containing # of units, @ reward miles/unit && $30 redemption fee
+			} else if (x instanceof OffseasonTicket) {
+				//Extra line containing # of units, @ cost/unit && $20 redemption fee
+			} else if (x instanceof Ticket) {
+				//Extra line containing # of units, @ cost/unit
+			} else if (x instanceof Insurance) {
+				//Extra line containing # of units, @ cost/unit * miles
+			}
+		}
 		// TODO: Add code for generating Cost Summary of all
 		// products and services in an Invoice
+		sb.append("\t\t\t\t\t\t\t============================================\n");
+		sb.append("SUBTOTALS\n");
+		sb.append("DISCOUNT\n"); //specify type of discount
+		sb.append("ADDITIONAL FEE\n"); //such as for corporate customers
+		sb.append("TOTAL\n");
 
 		return sb.toString();
 
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public String generateDetailReport() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Individual Invoice Detail Reports\n");
 		sb.append("==================================================\n");
-
-		/*
-		 * TODO: Loop through all invoices and call the getTravelSummary() and
-		 * getCostSummary() for each invoice
-		 */
-		// for-loop through all invoices
-		// for each invoice, do:
-		// getTravelSummary
-		// customer info
-		// fares and services
 
 		return sb.toString();
 	}
@@ -146,11 +164,9 @@ public class InvoiceReport {
 			System.out.println(
 					"--------------------------------------------------------------------------------------------------------\n");
 			System.out.println(travelSummary);
-			//extra info
-			//lines
-			//customer info
-			//salesperson info
 			System.out.println(costSummary);
+			System.out.println(
+					"--------------------------------------------------------------------------------------------------------\n");
 		}
 
 		System.out.println(
