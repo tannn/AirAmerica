@@ -2,7 +2,7 @@ package com.airamerica;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -15,7 +15,7 @@ public class Invoice {
 	private String customerCode;
 	private String salespersonCode;
 	private String invoiceDate;
-	private List<Product> products;
+	private ArrayList<Product> products;
 
 	public Invoice(String invoiceCode, String customerCode, String salespersonCode, String invoiceDate,
 			String[] productInfo) {
@@ -23,6 +23,7 @@ public class Invoice {
 		this.customerCode = customerCode;
 		this.salespersonCode = salespersonCode;
 		this.invoiceDate = invoiceDate;
+		products = new ArrayList<Product>();
 		for (String s : productInfo) {
 			String[] productInvoice = s.split(":");
 			if (Product.getProductType(productInvoice[0]).equals("TS")) {
@@ -89,7 +90,7 @@ public class Invoice {
 		return invoiceDate;
 	}
 
-	public List<Product> getProducts() {
+	public ArrayList<Product> getProducts() {
 		return products;
 	}
 }
