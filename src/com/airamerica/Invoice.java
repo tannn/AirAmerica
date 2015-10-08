@@ -48,7 +48,7 @@ public class Invoice {
 			} else if (Product.getProductType(productInvoice[0]).equals("SC")) {
 				products.add(new CheckedBaggage(productInvoice[0], Integer.parseInt(productInvoice[1])));
 			} else if (Product.getProductType(productInvoice[0]).equals("SR")) {
-				products.add(new Refreshments(productInvoice[0], Integer.parseInt(productInvoice[1])));
+				products.add(new Refreshment(productInvoice[0], Integer.parseInt(productInvoice[1])));
 			}
 
 		}
@@ -68,8 +68,8 @@ public class Invoice {
 	}
 
 	/**
-	 * 
-	 * @return The name (Last, First) of the salesperson
+	 *
+	 * @return Name (Last, First) of the salesperson
 	 */
 	public String getSalesperson() {
 		if (salespersonCode.equalsIgnoreCase("online")) {

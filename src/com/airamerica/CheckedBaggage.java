@@ -25,9 +25,9 @@ public class CheckedBaggage extends Services {
         this.quantity = quantity;
         Scanner productFile = null;
         try {
-		productFile = new Scanner(new FileReader("data/products.dat"));
+		productFile = new Scanner(new FileReader("data/Products.dat"));
             } catch (FileNotFoundException e) {
-		System.out.println("File not found.");
+		System.out.println("Produdcts.dat not found.");
             }
         while(productFile.hasNextLine()) {  
                 String line = productFile.nextLine();

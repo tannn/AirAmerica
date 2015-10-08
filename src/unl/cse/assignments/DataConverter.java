@@ -16,16 +16,16 @@ public class DataConverter {
 
                 static int personCount = 0;
 		static Person[] people = null;
-                
+
                 static int airportCount = 0;
 		static Airport[] airports = null;
-                
+
                 static int productCount = 0;
 		static Product[] products = null;
-                
+
                 static int customerCount = 0;
 		static Customer[] customers = null;
-    
+
 	public static void main(String args[]) {
 
 		Scanner personsFile = null;
@@ -45,7 +45,7 @@ public class DataConverter {
 
 		while (personsFile.hasNextLine()) {
 			String line = personsFile.nextLine();
-			if (line.length() <= 5 && line.length() > 0) 
+			if (line.length() <= 5 && line.length() > 0)
 				people = new Person[Integer.parseInt(line)];
 			else {
 				String[] personVals = line.split(";");
@@ -89,7 +89,7 @@ public class DataConverter {
 			else {
 				String[] customerVals = line.split(";");
 				customers[customerCount] = new Customer(customerVals[0], customerVals[1], customerVals[2], customerVals[3]);
-				if (customerVals.length > 4) 
+				if (customerVals.length > 4)
 					customers[customerCount].setAirlineMiles(Integer.parseInt(customerVals[4]));
 				customerCount++;
 			}
@@ -129,9 +129,9 @@ public class DataConverter {
 	}
 
 	public static void output() {
-            
+
                 XStream xstream = new XStream();
-		
+
 //                persons output
 		xstream.alias("person", Person.class);
 		PrintWriter pw = null;
@@ -149,7 +149,7 @@ public class DataConverter {
 		pw.print("</persons>" + "\n");
 		pw.close();
 
-                
+
 //                airports output
 		xstream.alias("airport", Airport.class);
 		pw = null;
@@ -166,7 +166,7 @@ public class DataConverter {
                 }
 		pw.print("</airports>" + "\n");
 		pw.close();
-                
+
 //                customers output
                 xstream.alias("customer", Customer.class);
 		pw = null;
@@ -183,7 +183,7 @@ public class DataConverter {
                 }
 		pw.print("</customers>" + "\n");
 		pw.close();
-                
+
 //                products output
                 xstream.alias("product", Product.class);
 		pw = null;
@@ -229,7 +229,7 @@ public class DataConverter {
                     if(CheckedBaggage.class.isInstance(p)){
                         xstream.alias("checkedBaggageService", CheckedBaggage.class);
                         pw.print("\t" + xstream.toXML(p) + "\n");
-                    }   
+                    }
                 }
                 pw.print("</checkedBaggage>" + "\n");
                 pw.print("<insurance>\n");
@@ -238,7 +238,7 @@ public class DataConverter {
                     if(Insurance.class.isInstance(p)){
                         xstream.alias("insuranceService", Insurance.class);
                         pw.print("\t" + xstream.toXML(p) + "\n");
-                    }   
+                    }
                 }
                 pw.print("</insurance>" + "\n");
                 pw.print("<refreshments>\n");
@@ -247,7 +247,7 @@ public class DataConverter {
                     if(Refreshments.class.isInstance(p)){
                         xstream.alias("refreshmentsService", Refreshments.class);
                         pw.print("\t" + xstream.toXML(p) + "\n");
-                    }   
+                    }
                 }
                 pw.print("</refreshments>" + "\n");
                 pw.print("<specialAssistance>\n");
@@ -256,7 +256,7 @@ public class DataConverter {
                     if(SpecialAssistance.class.isInstance(p)){
                         xstream.alias("specialAssistanceService", SpecialAssistance.class);
                         pw.print("\t" + xstream.toXML(p) + "\n");
-                    }   
+                    }
                 }
                 pw.print("</specialAssistance>" + "\n");
                 pw.print("</services>" + "\n");

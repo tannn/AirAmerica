@@ -80,7 +80,7 @@ public class InvoiceReport {
 
 	/**
 	 * @param invoiceCode Code of invoice
-	 * @return
+	 * @return Subtotals, discounts, fees, and totals of all fees and services
 	 */
 	private String getCostSummary(int invoiceListNum) {
 		StringBuilder sb = new StringBuilder();
