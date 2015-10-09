@@ -149,8 +149,8 @@ public class InvoiceReport {
 				taxes +=((Ticket) x).calculateTax();
 			} else if (x instanceof Insurance) {
 				// TODO: # of units
-				sb.append("Insurance " + ((Insurance) x).getName() + " (" + ((Insurance) x).getAgeClass() + ")\n");
-				sb.append("\t(" + format.format(((Insurance) x).getCostPerMile()) + "/mile)\n");
+				sb.append("Insurance " + ((Insurance) x).getName() + " (" + ((Insurance) x).getAgeClass() + ")\t\t\t\t\t"+format.format(((Insurance) x).calculatePrice())+ "\t"+format.format(((Insurance) x).calculateTax()) + "\t"+format.format(((Insurance) x).calculatePrice()+ ((Insurance) x).calculateTax())+"\n");
+				sb.append("\t(" + format.format(((Insurance) x).getCostPerMile()) + "/mile @ "+ format.format(((Insurance) x).getMiles())+" miles)\n");
 				subtotal +=0;
 				taxes +=0;
 			} else if (x instanceof CheckedBaggage) {
@@ -168,7 +168,7 @@ public class InvoiceReport {
 				subtotal +=((Refreshment) x).calculatePrice();
 				taxes +=((Refreshment) x).calculateTax();
 			} else if (x instanceof SpecialAssistance) {
-				sb.append(((SpecialAssistance) x).getTypeOfService() + "\n");
+				sb.append(((SpecialAssistance) x).getReason() + "\n");
 			}
 		}
 		sb.append("\t\t\t\t\t\t\t============================================\n");
