@@ -151,6 +151,34 @@ public class Person {
 		}
 		return null;
 	}
+	
+	        public String getSeat(){
+            String seat = "";
+            Scanner invoiceFile = null;
+            try {
+            invoiceFile = new Scanner(new FileReader("data/Invoices.dat"));
+        } catch (FileNotFoundException e) {
+            System.out.println("data/Invoices.dat not found.");
+        }
+        while (invoiceFile.hasNextLine()) {
+            String line = invoiceFile.nextLine();
+            if (!(line.length() <= 5 && line.length() > 0)) {
+                for(String s : line.split(";")[4].split(",")){
+                    String[] p = s.split(":");
+                    if(Product.getProductType(p[0]).substring(0).equals("TS")||
+                            Product.getProductType(p[0]).substring(0).equals("TO")||
+                            Product.getProductType(p[0]).substring(0).equals("TA")){
+                        for(int i = 4; i < p.length; i += 5){
+                            if(p[i].equals(this.personCode)){
+                                seat = p[i-1];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+            return seat;
+        }
     
 	
 }
