@@ -23,6 +23,7 @@ public class Refreshment extends Services {
 
 	public Refreshment(String productCode, int quantity) {
 		super(productCode, "SR");
+		this.quantity = quantity;
 		Scanner productFile = null;
 		try {
 			productFile = new Scanner(new FileReader("data/Products.dat"));
