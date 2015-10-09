@@ -26,7 +26,7 @@ public class Ticket extends Product {
 	private String aircraftType;
 	private String date;
 	private String seat;
-	private ArrayList<Person> ticketHolder;
+	public ArrayList<Person> ticketHolder;
 	private String ticketNote;
 
 	public Ticket(String depAirportCode, String arrAirportCode, String depTime, String arrTime, String flightNo,
@@ -165,10 +165,6 @@ public class Ticket extends Product {
 	public double getDistance() {
         Airport arr = Airport.getAirport(arrAirportCode);
         Airport dep = Airport.getAirport(depAirportCode);
-        System.out.println(arrAirportCode);
-        System.out.println(depAirportCode);
-        System.out.println(arr);
-        System.out.println(dep);
         return Haversine.getMiles(dep.getAirportLatDeg(), dep.getAirportLatMin(),
                 dep.getAiportLongDeg(), dep.getAirportLongMin(), arr.getAirportLatDeg(),
                 arr.getAirportLatMin(), arr.getAiportLongDeg(), arr.getAirportLongMin());
@@ -195,13 +191,6 @@ public class Ticket extends Product {
         int segmentTax = ticketHolder.size() * 4;
         double securityTax = ticketHolder.size() * 5.60;
         return baseTax + segmentTax + securityTax;
-	}
-	
-	public double calculateFees() {
-        if (flightClass.equals("BC"))
-        	return 40.00;
-        else
-        	return 0.00;
 	}
 
 }
