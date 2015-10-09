@@ -13,6 +13,7 @@ public class Invoice {
 	private String salespersonCode;
 	private String invoiceDate;
 	private ArrayList<Product> products;
+	
 
 	public Invoice(String invoiceCode, String customerCode, String salespersonCode, String invoiceDate,
 			String[] productInfo) {
@@ -118,8 +119,10 @@ public class Invoice {
 	public double getDiscounts() {
 		if (Customer.getCustomerType(getCustomerCode()).equals("[CORPORATE]")) 
 			return getSubtotals()  * .12;
+		else if (Customer.getCustomerType(getCustomerCode()).equals("[GOVERNMENT]")) 
+			return getTaxes();
 		else
-			return 0.00;
+			return 0;
 	}
 	
 	public double getTotals() {
