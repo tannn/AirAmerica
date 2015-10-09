@@ -20,7 +20,6 @@ public class Person {
     private String nationality;
     private String identityNumber;
 
-    // TODO: Add appropriate constructor(s)
     public Person(String personCode, Address address, String firstName, String lastName,
             String phoneNumber, int age, String nationality, String identityNumber) {
         this.personCode = personCode;
@@ -67,7 +66,6 @@ public class Person {
         this.emails = new ArrayList<String>(); 
     }
 
-    // TODO: Add Getters and setters as appropriate
     public Address getAddress() {
         return this.address;
     }
@@ -80,7 +78,6 @@ public class Person {
         this.emails = emails;
     }
 
-    // TODO: Add additional methods here
     public void addEmail(String email) {
         this.emails.add(email);
     }
@@ -148,7 +145,8 @@ public class Person {
 			String line = personFile.nextLine();
 			String[] personData = line.split(";");
 			if (personData[0].equals(personCode)) {
-				return personData[1] + "\n\t" + personData[2] + "\n\t" + personData[3] + "," + personData[4];
+				String[] extraData = personData[2].split(",");
+				return personData[1] + "\n\t" + extraData[0] + "\n\t" + extraData[1] + " "+ extraData[2] + " " + extraData[3] + " " + extraData[4];
 			}
 		}
 		return null;
