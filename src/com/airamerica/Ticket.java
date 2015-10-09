@@ -6,7 +6,10 @@ package com.airamerica;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Scanner;
+
+import com.airamerica.utils.Haversine;
 
 /**
  *
@@ -23,11 +26,11 @@ public class Ticket extends Product {
 	private String aircraftType;
 	private String date;
 	private String seat;
-	private Person ticketHolder;
+	private ArrayList<Person> ticketHolder;
 	private String ticketNote;
 
 	public Ticket(String depAirportCode, String arrAirportCode, String depTime, String arrTime, String flightNo,
-			String flightClass, String aircraftType, String date, String seat, Person ticketHolder, String ticketNote,
+			String flightClass, String aircraftType, String date, String seat, ArrayList<Person> ticketHolder, String ticketNote,
 			String productCode, String productType) {
 		super(productCode, productType);
 		this.depAirportCode = depAirportCode;
@@ -43,12 +46,12 @@ public class Ticket extends Product {
 		this.ticketNote = ticketNote;
 	}
 
-	public Ticket(String productCode, String productType, String date, String seat, Person ticketHolder,
+	public Ticket(String productCode, String productType, String date, String seat, ArrayList<Person> ticketHolders,
 			String ticketNote) {
 		super(productCode, productType);
 		this.date = date;
 		this.seat = seat;
-		this.ticketHolder = ticketHolder;
+		this.ticketHolder = ticketHolders;
 		this.ticketNote = ticketNote;
 		Scanner productFile = null;
 		try {
@@ -107,7 +110,7 @@ public class Ticket extends Product {
 		return seat;
 	}
 
-	public Person getTicketHolder() {
+	public ArrayList<Person> getTicketHolder() {
 		return ticketHolder;
 	}
 
@@ -115,20 +118,82 @@ public class Ticket extends Product {
 		return ticketNote;
 	}
 	
-	    public double calculatePrice()
-    {
+	public String getArrCity() {
+		Scanner airportFile = null;
+		try {
+			airportFile = new Scanner(new FileReader("data/Airports.dat"));
+		} catch (FileNotFoundException e) {
+			System.out.println("Airports.dat not found.");
+		}
+		while (airportFile.hasNextLine()) {
+			String line = airportFile.nextLine();
+			String[] airportData = line.split(";");
+			if (airportData[0].equals(getArrAirportCode())) {
+				String[] addressData = airportData[2].split(",");
+				return addressData[1] + "," + addressData[2];
+			}
+		}
+		return null;
+	}
+	
+	public String getDepCity() {
+		Scanner airportFile = null;
+		try {
+			airportFile = new Scanner(new FileReader("data/Airports.dat"));
+		} catch (FileNotFoundException e) {
+			System.out.println("Airports.dat not found.");
+		}
+		while (airportFile.hasNextLine()) {
+			String line = airportFile.nextLine();
+			String[] airportData = line.split(";");
+			if (airportData[0].equals(getDepAirportCode())) {
+				String[] addressData = airportData[2].split(",");
+				return addressData[1] + "," + addressData[2];
+			}
+		}
+		return null;
+	}
+	
+	public double getDistance() {
+        Airport arr = Airport.getAirport(arrAirportCode);
+        Airport dep = Airport.getAirport(depAirportCode);
+        System.out.println(arrAirportCode);
+        System.out.println(depAirportCode);
+        System.out.println(arr);
+        System.out.println(dep);
+        return Haversine.getMiles(dep.getAirportLatDeg(), dep.getAirportLatMin(),
+                dep.getAiportLongDeg(), dep.getAirportLongMin(), arr.getAirportLatDeg(),
+                arr.getAirportLatMin(), arr.getAiportLongDeg(), arr.getAirportLongMin());
+	}
+	
+	@Override
+	public double calculatePrice() {
         Airport arr = Airport.getAirport(arrAirportCode);
         Airport dep = Airport.getAirport(depAirportCode);
         double dist = Haversine.getMiles(dep.getAirportLatDeg(), dep.getAirportLatMin(),
                     dep.getAiportLongDeg(), dep.getAirportLongMin(), arr.getAirportLatDeg(),
                     arr.getAirportLatMin(), arr.getAiportLongDeg(), arr.getAirportLongMin());
-        if(flightClass == "EP"){
-            return dist*0.2;
-        }else if(flightClass == "BC"){
-            return dist*0.5;
-        }else{
-            return dist*0.15;
-        }
-    }
+		if (flightClass.equals("EC"))
+			return dist * .15;
+		else if (flightClass.equals("BC"))
+			return dist * .5;
+		else
+			return dist * .2;
+	}
+
+	@Override
+	public double calculateTax() {
+        double baseTax = calculatePrice() * .075;
+        int segmentTax = ticketHolder.size() * 4;
+        double securityTax = ticketHolder.size() * 5.60;
+        return baseTax + segmentTax + securityTax;
+	}
+	
+	public double calculateFees() {
+        if (flightClass.equals("BC"))
+        	return 40.00;
+        else
+        	return 0.00;
+	}
 
 }
