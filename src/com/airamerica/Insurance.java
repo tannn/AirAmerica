@@ -62,5 +62,19 @@ public class Insurance extends Services {
 	public String getCostPerMile() {
 		return costPerMile;
 	}
+	
+	    @Override
+    public double calculatePrice() {
+        return costPerMile*getMiles();
+    }
+
+ @Override
+    public double calculateTax() {
+        return calculatePrice()*0.04;
+    }
+	
+	    public double getMiles(){
+        return Ticket.getTicket(ticketCode).getDistance();
+    }
 
 }
