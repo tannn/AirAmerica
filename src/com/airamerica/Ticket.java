@@ -192,5 +192,46 @@ public class Ticket extends Product {
         double securityTax = ticketHolder.size() * 5.60;
         return baseTax + segmentTax + securityTax;
 	}
+	
+	 public static Ticket getTicket(String ticketCode) {
+        ArrayList<Person> passengers = new ArrayList<Person>();
+        Scanner invoiceFile = null;
+        try {
+            invoiceFile = new Scanner(new FileReader("data/Invoices.dat"));
+        } catch (FileNotFoundException e) {
+            System.out.println("data/Invoices.dat not found.");
+        }
+        while (invoiceFile.hasNextLine()) {
+            String line = invoiceFile.nextLine();
+            if (!(line.length() <= 5 && line.length() > 0)) {
+                for (String s : line.split(";")[4].split(",")) {
+                    String[] p = s.split(":");
+                    if (Product.getProductType(p[0].trim()).equals("TS")) {
+                        for (int i = 0; i < Integer.parseInt(p[2]); i++) {
+                            passengers.add(new Person(p[4 + i * 5], p[5 + i * 5],
+                                    Integer.parseInt(p[6 + i * 5]), p[7 + i * 5]));
+                        }
+                        return new Ticket(p[0], "TS", p[1], p[3], passengers,
+                                p[p.length - 1]);
+                    } else if (Product.getProductType(p[0]).equals("TA")) {
+                        for (int i = 0; i < Integer.parseInt(p[2]); i++) {
+                            passengers.add(new Person(p[4 + i * 5], p[5 + i * 5],
+                                    Integer.parseInt(p[6 + i * 5]), p[7 + i * 5]));
+                        }
+                        return new AwardTicket(p[0], p[1], p[3],
+                                passengers, p[p.length - 1]);
+                    } else if (Product.getProductType(p[0]).equals("TO")) {
+                        for (int i = 0; i < Integer.parseInt(p[2]); i++) {
+                            passengers.add(new Person(p[4 + i * 5], p[5 + i * 5],
+                                    Integer.parseInt(p[6 + i * 5]), p[7 + i * 5]));
+                        }
+                        return new OffseasonTicket(p[0], p[1],
+                                p[3], passengers, p[p.length - 1]);
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
 }
