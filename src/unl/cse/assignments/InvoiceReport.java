@@ -31,8 +31,7 @@ public class InvoiceReport {
 		System.out.printf("Invoice\tCustomer\t\t\t\t\t\t\t\tSalesperson\t\tSubtotal\tFees\tTaxes\tDiscount\tTotal\n");
 		// TODO:  subtotal, fees, taxes, discount, total
 		for (Invoice i : invoices) {
-			System.out.printf("%s\t%s %s\t\t\t\t\t\t%s\t\t\n", i.getInvoiceCode(), Customer.getCustomerName(i.getCustomerCode()), Customer.getCustomerType(i.getCustomerCode()), i.getSalesperson());
-
+			System.out.printf("%s\t%s %s\t\t\t\t\t\t%s\t\t%f\t%f\t%f\t%f\t%f\n", i.getInvoiceCode(), Customer.getCustomerName(i.getCustomerCode()), Customer.getCustomerType(i.getCustomerCode()), i.getSalesperson(), i.getSubtotals(), i.getFees(), i.getTaxes(), i.getDiscounts(), i.getTotals());
 		}
 		System.out.printf(
 				"=====================================================================================================================================================\n");
@@ -55,8 +54,10 @@ public class InvoiceReport {
 				Ticket b = (Ticket) x;
 				sb.append(b.getDate() + "\t" + b.getFlightNo() + "\t" + b.getFlightClass() + "\t" + b.getDepCity() + "\t\t" + b.getArrCity() + "\t\t" + b.getAircraftType() + "\n");
 				sb.append("\t\t\t\t(" + b.getDepAirportCode() + ") " + b.getDepTime() + "\t\t\t (" + b.getArrAirportCode() + ") " + b.getArrTime() + "\n");
-				sb.append("\t\tTRAVELER\t\t\t\tAGE\tSEAT NO.\n"); //TODO: May need another for loop for all the passengers
-
+				sb.append("TRAVELER\t\tAGE\tSEAT NO.\n");
+				for (Person f : ((Ticket) x).ticketHolder) {
+					sb.append(f.getLastName() + ", " + f.getFirstName() + "\t\t" + f.getAge() + "\t\n"); //TODO: get seat number
+				}
 
 
 			}
@@ -105,7 +106,7 @@ public class InvoiceReport {
 			} else if (x instanceof CheckedBaggage) {
 				sb.append("Baggage (" + ((CheckedBaggage) x).getQuantity() + " unit(s) @ $25.00 for first and $35.00 onwards)\n"); //TODO: pricing
 			} else if (x instanceof Refreshment) {
-//				sb.append(((Refreshment) x).getName() + " (" + /*#*/ + " unit(s) @ " + /* price */ + "/unit)");
+				sb.append(((Refreshment) x).getName() + " ("  + " unit(s) @ " + ((Refreshment) x).getCost() + "/unit)");
 			}
 		}
 		// TODO: Add code for generating Cost Summary of all
