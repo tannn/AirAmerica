@@ -47,6 +47,10 @@ public class Refreshment extends Services {
 	public double getCost() {
 		return cost;
 	}
+	
+	public int getQuantity() {
+		return quantity;
+	}
 
 	@Override
 	public double calculatePrice() {
