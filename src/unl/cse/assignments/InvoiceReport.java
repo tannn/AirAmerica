@@ -88,16 +88,16 @@ public class InvoiceReport {
 			sb.append(x.getProductCode() + "\t");
 			if (x instanceof AwardTicket) {
 				//TODO: Extra line containing # of units, @ reward miles/unit && $30 redemption fee
-				sb.append("AwardTicket(" + ((AwardTicket) x).getClass() + ") " + ((AwardTicket) x).getDepAirportCode() + " to " + ((AwardTicket) x).getArrAirportCode() + " (" + Math.round(((Ticket) x).getDistance()) + " miles)\n"); //TODO: pricing
+				sb.append("AwardTicket(" + ((AwardTicket) x).getFlightClass() + ") " + ((AwardTicket) x).getDepAirportCode() + " to " + ((AwardTicket) x).getArrAirportCode() + " (" + Math.round(((Ticket) x).getDistance()) + " miles)\n"); //TODO: pricing
 //				sb.append(/**/" unit(s) @ " + /* reward miles */ + " reward miles/unit with $30 redemption fee)" );
 			} else if (x instanceof OffseasonTicket) {
 				//TODO: Extra line containing # of units, @ cost/unit && $20 redemption fee
 				System.out.println(x.getProductCode());
-				sb.append("OffseasonTicket(" + ((OffseasonTicket) x).getClass() + ") " + ((OffseasonTicket) x).getDepAirportCode() + " to " + ((OffseasonTicket) x).getArrAirportCode() + " (" + Math.round(((OffseasonTicket) x).getDistance()) + " miles)\n"); //TODO: pricing, % off
+				sb.append("OffseasonTicket(" + ((OffseasonTicket) x).getFlightClass() + ") " + ((OffseasonTicket) x).getDepAirportCode() + " to " + ((OffseasonTicket) x).getArrAirportCode() + " (" + Math.round(((OffseasonTicket) x).getDistance()) + " miles)\n"); //TODO: pricing, % off
 //				sb.append(/**/" unit(s) @ " + /* cost */ + "unit with $20 fee)" );
 			} else if (x instanceof Ticket) {
 				//TODO: Extra line containing # of units, @ cost/unit
-				sb.append("StandardTicket(" + ((Ticket) x).getClass() + ") " + ((Ticket) x).getDepAirportCode() + " to " + ((Ticket) x).getArrAirportCode() + " (" + Math.round(((Ticket) x).getDistance()) + " miles)\n"); //TODO: pricing, % off
+				sb.append("StandardTicket(" + ((Ticket) x).getFlightClass() + ") " + ((Ticket) x).getDepAirportCode() + " to " + ((Ticket) x).getArrAirportCode() + " (" + Math.round(((Ticket) x).getDistance()) + " miles)\n"); //TODO: pricing, % off
 //				sb.append(/**/" unit(s) @ " + /* cost */ + "unit)" );
 			} else if (x instanceof Insurance) {
 				//TODO: Extra line containing # of units, @ cost/unit * miles
