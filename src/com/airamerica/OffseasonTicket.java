@@ -14,6 +14,18 @@ public class OffseasonTicket extends Ticket{
 	private String seasonEndDate;
 	private String rebate;
 
+        public OffseasonTicket(String productCode, String seasonStartDate,
+                String seasonEndDate, String depAirportCode, String arrAirportCode,
+		String depTime, String arrTime, String flightNo, String flightClass,
+                String aircraftType, String rebate, String date, String seat,
+                ArrayList<Person> ticketHolders, String ticketNote) {
+		super(depAirportCode,arrAirportCode,depTime,arrTime,flightNo,flightClass,
+                        aircraftType,date,seat,ticketHolders,ticketNote,productCode,"TO");
+                this.rebate = rebate;
+                this.seasonEndDate = seasonEndDate;
+                this.seasonStartDate = seasonStartDate;
+	}
+        
         public OffseasonTicket(String productCode, String date, String seat,
                 ArrayList<Person> ticketHolders, String ticketNote) {
 		super(productCode, "TO", date,seat,ticketHolders,ticketNote);
@@ -33,15 +45,6 @@ public class OffseasonTicket extends Ticket{
                 }
         }
     }
-        
-        public OffseasonTicket(String productCode, String seasonStartDate,
-                String seasonEndDate, String rebate, String date, String seat,
-                Person ticketHolder, String ticketNote) {
-		super(productCode, "TO", date,seat,ticketHolder,ticketNote);
-                this.rebate = rebate;
-                this.seasonEndDate = seasonEndDate;
-                this.seasonStartDate = seasonStartDate;
-	}
 
 	public String getSeasonStartDate() {
 		return seasonStartDate;
