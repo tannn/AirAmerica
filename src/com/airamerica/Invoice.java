@@ -39,14 +39,14 @@ public class Invoice {
                         ticketHolders.add(new Person(productInvoice[4 + i * 5], productInvoice[5 + i * 5],
                                 Integer.parseInt(productInvoice[6 + i * 5]), productInvoice[7 + i * 5]));
                     }
-                    products.add(new AwardTicket(productInvoice[0], null, productInvoice[1],
+                     products.add(new AwardTicket(productInvoice[0], productInvoice[1],
                             productInvoice[3], ticketHolders, productInvoice[productInvoice.length - 1]));
 			} else if (Product.getProductType(productInvoice[0]).equals("TO")) {
 				for (int i = 0; i < Integer.parseInt(productInvoice[2]); i++) {
                         ticketHolders.add(new Person(productInvoice[4 + i * 5], productInvoice[5 + i * 5],
                                 Integer.parseInt(productInvoice[6 + i * 5]), productInvoice[7 + i * 5]));
                     }
-                    products.add(new OffseasonTicket(productInvoice[0], null, null, null,
+                    products.add(new OffseasonTicket(productInvoice[0],
                             productInvoice[1], productInvoice[3], ticketHolders, productInvoice[productInvoice.length - 1]));
 			} else if (Product.getProductType(productInvoice[0]).equals("SI")) {
 				products.add(new Insurance(productInvoice[0], Integer.parseInt(productInvoice[1]), productInvoice[2]));
