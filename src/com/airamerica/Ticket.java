@@ -62,7 +62,7 @@ public class Ticket extends Product {
 		while (productFile.hasNextLine()) {
 			String line = productFile.nextLine();
 			String[] productData = line.split(";");
-			if (productCode.equals(productData[0]) && productType.equals(productData[1])) {
+			if (productCode.equals(productData[0]) && productType.equals(productData[1]) && productData[2].length() < 5) {
 				this.depAirportCode = productData[2];
 				this.arrAirportCode = productData[3];
 				this.depTime = productData[4];
@@ -70,6 +70,14 @@ public class Ticket extends Product {
 				this.flightNo = productData[6];
 				this.flightClass = productData[7];
 				this.aircraftType = productData[8];
+			} else if (productCode.equals(productData[0]) && productType.equals(productData[1]) && productData[2].length() > 5){
+				this.depAirportCode = productData[4];
+				this.arrAirportCode = productData[5];
+				this.depTime = productData[6];
+				this.arrTime = productData[7];
+				this.flightNo = productData[8];
+				this.flightClass = productData[9];
+				this.aircraftType = productData[10];
 			}
 		}
 	}
