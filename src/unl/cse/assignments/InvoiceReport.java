@@ -163,7 +163,7 @@ public class InvoiceReport {
 				subtotal +=((CheckedBaggage) x).calculatePrice();
 				taxes +=((CheckedBaggage) x).calculateTax();
 			} else if (x instanceof Refreshment) {
-				sb.append(((Refreshment) x).getName() + " (1 unit(s) @ " + format.format(((Refreshment) x).getCost())
+				sb.append(((Refreshment) x).getName() + " ("+((Refreshment) x).getQuantity()+" unit(s) @ " + format.format(((Refreshment) x).getCost())
 						+ "/unit)\t$"+format.format(((Refreshment) x).calculatePrice()) + "\t$" +format.format(((Refreshment) x).calculateTax()) + "\t$"+ format.format(((Refreshment) x).calculatePrice() + ((Refreshment) x).calculateTax())+"\n");
 				subtotal +=((Refreshment) x).calculatePrice();
 				taxes +=((Refreshment) x).calculateTax();
