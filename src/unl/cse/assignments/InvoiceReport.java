@@ -2,6 +2,7 @@ package unl.cse.assignments;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -25,6 +26,7 @@ import com.airamerica.utils.StandardUtils;
 public class InvoiceReport {
 
 	private ArrayList<Invoice> invoices = new ArrayList<Invoice>();
+	DecimalFormat format = new DecimalFormat("0.##");
 
 	private void generateSummaryReport() {
 		float subtotals = 0;
@@ -34,11 +36,12 @@ public class InvoiceReport {
 		float totals = 0;
 		System.out.printf("Executive Summary Report\n");
 		System.out.printf("=========================\n");
-		System.out.printf("Invoice\tCustomer\t\t\t\t\t\t\t\tSalesperson\t\tSubtotal\tFees\tTaxes\tDiscount\tTotal\n");
+		System.out.printf("Invoice\tCustomer\t\t\t\t\t\tSalesperson\t\tSubtotal\tFees\tTaxes\tDiscount\tTotal\n");
 		for (Invoice i : invoices) {
-			System.out.printf("%s\t%s %s\t\t\t\t\t\t%s\t$%f\t$%f\t$%f\t$-%f\t$%f\n", i.getInvoiceCode(),
+			System.out.printf("%s\t%s %s\t\t\t\t%s\t$%s\t$%s\t$%s\t$-%s\t$%s\n", i.getInvoiceCode(),
 					Customer.getCustomerName(i.getCustomerCode()), Customer.getCustomerType(i.getCustomerCode()),
-					i.getSalesperson(), i.getSubtotals(), i.getFees(), i.getTaxes(), i.getDiscounts(), i.getTotals());
+					i.getSalesperson(), format.format(i.getSubtotals()), format.format(i.getFees()),
+					format.format(i.getTaxes()), format.format(i.getDiscounts()), format.format(i.getTotals()));
 			subtotals += i.getSubtotals();
 			fees += i.getFees();
 			taxes += i.getTaxes();
@@ -47,7 +50,8 @@ public class InvoiceReport {
 		}
 		System.out.printf(
 				"=====================================================================================================================================================\n");
-		System.out.printf("TOTALS\t\t\t\t\t\t\t$%f\t$%f\t$%f\t$-%f\t$%f\n", subtotals, fees, taxes, discounts, totals);
+		System.out.printf("TOTALS\t\t\t\t\t\t\t\t\t\t\t$%s\t$%s\t$%s\t$-%s\t$%s\n", format.format(subtotals),
+				format.format(fees), format.format(taxes), format.format(discounts), format.format(totals));
 
 	}
 
@@ -71,10 +75,7 @@ public class InvoiceReport {
 						+ b.getArrAirportCode() + ") " + b.getArrTime() + "\n");
 				sb.append("TRAVELER\t\tAGE\tSEAT NO.\n");
 				for (Person f : ((Ticket) x).getTicketHolder()) {
-					sb.append(f.getLastName() + ", " + f.getFirstName() + "\t\t" + f.getAge() + "\t\n"); // TODO:
-																											// get
-																											// seat
-																											// number
+					sb.append(f.getLastName() + ", " + f.getFirstName() + "\t\t" + f.getAge() + "\t"+ f.getSeat() +"\n");
 				}
 
 			}
@@ -99,6 +100,8 @@ public class InvoiceReport {
 	 * @return Subtotals, discounts, fees, and totals of all fees and services
 	 */
 	private String getCostSummary(int invoiceListNum) {
+		double subtotal = 0;
+		double taxes = 0;
 		StringBuilder sb = new StringBuilder();
 		sb.append("FARES AND SERVICES\n");
 		sb.append("==================================================\n");
@@ -110,46 +113,69 @@ public class InvoiceReport {
 				// TODO: # of units, @ reward miles/unit
 				sb.append("AwardTicket(" + ((AwardTicket) x).getFlightClass() + ") "
 						+ ((AwardTicket) x).getDepAirportCode() + " to " + ((AwardTicket) x).getArrAirportCode() + " ("
-						+ Math.round(((Ticket) x).getDistance()) + " miles)\n"); // TODO:
-																					// pricing
+						+ Math.round(((Ticket) x).getDistance()) + " miles)\t\t\t\t $"
+						+ format.format(((AwardTicket) x).calculatePrice()) + "\t$"
+						+ format.format(((AwardTicket) x).calculateTax()) + "\t$"
+						+ format.format(((AwardTicket) x).calculatePrice() + ((AwardTicket) x).calculateTax()) + "\n"); // TODO:
+				// pricing
 				// sb.append(/**/" unit(s) @ " + /* reward miles */ + " reward
 				// miles/unit with $30 redemption fee)" );
+				subtotal +=((AwardTicket) x).calculatePrice();
+				taxes +=((AwardTicket) x).calculateTax();
 			} else if (x instanceof OffseasonTicket) {
 				// TODO: # of units
 				System.out.println(x.getProductCode());
 				sb.append("OffseasonTicket(" + ((OffseasonTicket) x).getFlightClass() + ") "
 						+ ((OffseasonTicket) x).getDepAirportCode() + " to " + ((OffseasonTicket) x).getArrAirportCode()
-						+ " (" + Math.round(((OffseasonTicket) x).getDistance()) + " miles)\n"); // TODO:
-																									// pricing,
-																									// %
-																									// off
-				sb.append("\t(unit(s) @ " + ((OffseasonTicket) x).calculatePrice() + "/unit with $20 fee)\n");
+						+ " (" + format.format(((OffseasonTicket) x).getDistance()) + " miles)\t\t\t\t $"
+						+ format.format(((OffseasonTicket) x).calculatePrice()) + "\t$"
+						+ format.format(((OffseasonTicket) x).calculateTax()) + "\t$"
+						+ format.format(((OffseasonTicket) x).calculatePrice() + ((OffseasonTicket) x).calculateTax())
+						+ "\n"); // TODO:
+				sb.append("\t(1 unit @ " + format.format(((OffseasonTicket) x).calculatePrice())
+						+ "/unit with $20 fee)\n");
+				subtotal +=((OffseasonTicket) x).calculatePrice();
+				taxes +=((OffseasonTicket) x).calculateTax();
 			} else if (x instanceof Ticket) {
 				// TODO: # of units
 				sb.append("StandardTicket(" + ((Ticket) x).getFlightClass() + ") " + ((Ticket) x).getDepAirportCode()
-						+ " to " + ((Ticket) x).getArrAirportCode() + " (" + Math.round(((Ticket) x).getDistance())
-						+ " miles)\n"); // TODO: pricing, % off
-				sb.append("\tunit(s) @ " + ((Ticket) x).calculatePrice() + "/unit)\n");
+						+ " to " + ((Ticket) x).getArrAirportCode() + " (" + format.format(((Ticket) x).getDistance())
+						+ " miles)\t\t\t\t $"
+						+ format.format(((Ticket) x).calculatePrice()) + "\t$"
+						+ format.format(((Ticket) x).calculateTax()) + "\t$"
+						+ format.format((((Ticket) x).calculatePrice() + ((Ticket) x).calculateTax())) + "\n");
+				sb.append("\t(1 unit @ " + format.format(((Ticket) x).calculatePrice()) + "/unit)\n");
+				subtotal +=((Ticket) x).calculatePrice();
+				taxes +=((Ticket) x).calculateTax();
 			} else if (x instanceof Insurance) {
 				// TODO: # of units
 				sb.append("Insurance " + ((Insurance) x).getName() + " (" + ((Insurance) x).getAgeClass() + ")\n");
-				sb.append("\t(unit(s) @ " + ((Insurance) x).getCostPerMile() + "/mile)\n");
+				sb.append("\t(" + format.format(((Insurance) x).getCostPerMile()) + "/mile)\n");
+				subtotal +=0;
+				taxes +=0;
 			} else if (x instanceof CheckedBaggage) {
 				sb.append("Baggage (" + ((CheckedBaggage) x).getQuantity()
-						+ " unit(s) @ $25.00 for first and $35.00 onwards)\n"); // TODO:
-																				// pricing
+						+ " unit(s) @ $25.00 for first and $35.00 onwards)" + "\t\t$"
+						+ format.format(((CheckedBaggage) x).calculatePrice()) + "\t$"
+						+ format.format(((CheckedBaggage) x).calculateTax()) + "\t$"
+						+ format.format(((CheckedBaggage) x).calculatePrice() + ((CheckedBaggage) x).calculateTax())
+						+ "\n");
+				subtotal +=((CheckedBaggage) x).calculatePrice();
+				taxes +=((CheckedBaggage) x).calculateTax();
 			} else if (x instanceof Refreshment) {
-				sb.append(
-						((Refreshment) x).getName() + " (" + " unit(s) @ " + ((Refreshment) x).getCost() + "/unit)\n");
+				sb.append(((Refreshment) x).getName() + " (1 unit(s) @ " + format.format(((Refreshment) x).getCost())
+						+ "/unit)\t$"+format.format(((Refreshment) x).calculatePrice()) + "\t$" +format.format(((Refreshment) x).calculateTax()) + "\t$"+ format.format(((Refreshment) x).calculatePrice() + ((Refreshment) x).calculateTax())+"\n");
+				subtotal +=((Refreshment) x).calculatePrice();
+				taxes +=((Refreshment) x).calculateTax();
 			} else if (x instanceof SpecialAssistance) {
 				sb.append(((SpecialAssistance) x).getTypeOfService() + "\n");
 			}
 		}
 		sb.append("\t\t\t\t\t\t\t============================================\n");
-		sb.append("SUBTOTALS\t\t\t" + invoices.get(invoiceListNum).getSubtotals() + "\n");
-		sb.append("DISCOUNT\t\t\t" + invoices.get(invoiceListNum).getDiscounts() + "\n");
-		sb.append("ADDITIONAL FEE\t\t\t" + invoices.get(invoiceListNum).getFees() + "\n");
-		sb.append("TOTAL\t\t\t" + invoices.get(invoiceListNum).getTotals() + "\n");
+		sb.append("SUBTOTALS\t\t\t\t\t\t\t\t$"+ format.format(subtotal) +"\t"+ format.format(taxes) + "\t"+format.format(invoices.get(invoiceListNum).getSubtotals()) + "\n");
+		sb.append("DISCOUNT\t\t\t\t\t\t\t\t\t\t$" + format.format(invoices.get(invoiceListNum).getDiscounts()) + "\n");
+		sb.append("ADDITIONAL FEE\t\t\t\t\t\t\t\t\t\t$" + format.format(invoices.get(invoiceListNum).getFees()) + "\n");
+		sb.append("TOTAL\t\t\t\t\t\t\t\t\t\t\t$" + format.format(invoices.get(invoiceListNum).getTotals()) + "\n");
 
 		return sb.toString();
 
