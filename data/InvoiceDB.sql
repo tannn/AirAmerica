@@ -18,8 +18,11 @@ CREATE TABLE Airport (
     Address_ID int  NOT NULL,
     AirportCode varchar(10)  NOT NULL,
     AirportName varchar(30)  NOT NULL,
-    Longitude varchar(5)  NOT NULL,
-    Latitude varchar(5)  NOT NULL,
+    LongDeg int  NOT NULL,
+    LongMin int NOT NULL,
+    LatDeg int  NOT NULL,
+    LatMin int NOT NULL,
+    PassengerFee decimal(3,3) NOT NULL,
     CONSTRAINT Airport_pk PRIMARY KEY (Airport_ID),
     CONSTRAINT Address_fk FOREIGN KEY Address_ID REFERENCES Address(Address_ID)
     	ON UPDATE CASCADE
@@ -91,11 +94,19 @@ CREATE TABLE FlightInfo (
     FlightInfo_ID int  NOT NULL UNIQUE AUTO_INCREMENT,
     Ticket_ID int  NOT NULL,
     FlightCode varchar(10)  NOT NULL,
-    DepartureCity varchar(15)  NOT NULL,
+    DepAirport_ID int  NOT NULL,
     DepartureTime varchar(8)  NOT NULL,
-    ArrivalCity varchar(15)  NOT NULL,
+    ArrAirport_ID int  NOT NULL,
+    FlightClass varchar(2) NOT NULL,
+    ArrivalTime varchar(8) NOT NULL,
     CONSTRAINT FlightInfo_pk PRIMARY KEY (FlightInfo_ID),
     CONSTRAINT Ticket_fk FOREIGN KEY Ticket_ID REFERENCES Ticket(Ticket_ID)
+    	ON UPDATE CASCADE
+    	ON DELETE CASCADE,
+    CONSTRAINT DepAirport_fk FOREIGN KEY DepAirport_ID REFERENCES Airport(DepAirport_ID)
+    	ON UPDATE CASCADE
+    	ON DELETE CASCADE,
+    CONSTRAINT ArrAirport_fk FOREIGN KEY ArrAirport_ID REFERENCES Airport(ArrAirport_ID)
     	ON UPDATE CASCADE
     	ON DELETE CASCADE
 );
@@ -230,5 +241,3 @@ CREATE TABLE StandardTicket (
     	ON UPDATE CASCADE
     	ON DELETE CASCADE
 );
-
-
