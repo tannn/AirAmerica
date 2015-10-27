@@ -5,7 +5,7 @@ UPDATE Airport JOIN Address ON Airport.address_ID = Address.Address_ID SET Addre
 /*4.*/
 DELETE FROM Airport WHERE Airport_ID = 'HOC';
 /*5.*/
-SELECT * FROM CheckedBaggage JOIN AwardTicket JOIN Refreshment JOIN SpecialAssistance JOIN Insurance JOIN OffseasonTicket JOIN StandardTicket ON CheckedBaggage.InvoiceID = AwardTicket.InvoiceID AND AwardTicket.InvoiceID = Refreshment.InvoiceID AND Refreshment.InvoiceID = SpecialAssistance.InvoiceID AND SpecialAssistance.InvoiceID = Insurance.InvoiceID AND Insurance.InvoiceID = OffseasonTicket.InvoiceID AND OffseasonTicket.InvoiceID = StandardTicket.InvoiceID WHERE InvoiceID = 0;
+SELECT * FROM CheckedBaggage JOIN AwardTicket JOIN Refreshment JOIN SpecialAssistance JOIN Insurance JOIN OffseasonTicket JOIN StandardTicket ON CheckedBaggage.InvoiceID = AwardTicket.InvoiceID AND AwardTicket.Invoice_ID = Refreshment.Invoice_ID AND Refreshment.Invoice_ID = SpecialAssistance.Invoice_ID AND SpecialAssistance.Invoice_ID = Insurance.Invoice_ID AND Insurance.Invoice_ID = OffseasonTicket.Invoice_ID AND OffseasonTicket.Invoice_ID = StandardTicket.Invoice_ID WHERE Invoice_ID = 0;
 /*6.*/
 SELECT * FROM Invoices WHERE Customer_ID = 7;
 /*7.*/
