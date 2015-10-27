@@ -1,7 +1,7 @@
 /*2.*/	
 INSERT INTO Email VALUES(1234, 'lpage@gmail.com');
 /*3.*/
-UPDATE Airport JOIN Address ON Airport.address_ID = Address.Address_ID SET Address = '54 Wildcress Ave' AND City = 'Paris' AND State = 'Texas' AND ZIP = '59019' AND Country = 'United States' WHERE Airport_ID = 'HOC';
+UPDATE Airport JOIN Address ON Airport.Address_ID = Address.Address_ID SET Address = '54 Wildcress Ave' AND City = 'Paris' AND State = 'Texas' AND ZIP = '59019' AND Country = 'United States' WHERE Airport_ID = 'HOC';
 /*4.*/
 DELETE FROM Airport WHERE Airport_ID = 'HOC';
 /*5.*/
