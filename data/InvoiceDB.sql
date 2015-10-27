@@ -24,7 +24,7 @@ CREATE TABLE Airport (
     LatMin int NOT NULL,
     PassengerFee decimal(3,3) NOT NULL,
     CONSTRAINT Airport_pk PRIMARY KEY (Airport_ID),
-    CONSTRAINT Address_fk FOREIGN KEY Address_ID REFERENCES Address(Address_ID)
+    CONSTRAINT Address_fk FOREIGN KEY (Address_ID) REFERENCES Address(Address_ID)
     	ON UPDATE CASCADE
     	ON DELETE CASCADE
 );
@@ -37,10 +37,10 @@ CREATE TABLE AwardTicket (
     FlightInfo_ID int  NOT NULL,
     PointsPerMile int  NOT NULL,
     CONSTRAINT AwardTicket_pk PRIMARY KEY (AwardTicket_ID),
-    CONSTRAINT Invoice_fk FOREIGN KEY Invoice_ID REFERENCES Invoice(Invoice_ID)
+    CONSTRAINT Invoice_fk FOREIGN KEY (Invoice_ID) REFERENCES Invoice(Invoice_ID)
     	ON UPDATE CASCADE
     	ON DELETE CASCADE,
-    CONSTRAINT FlightInfo_fk FOREIGN KEY FlightInfo_ID REFERENCES FlightInfo(FlightInfo_ID)
+    CONSTRAINT FlightInfo_fk FOREIGN KEY (FlightInfo_ID) REFERENCES FlightInfo(FlightInfo_ID)
     	ON UPDATE CASCADE
     	ON DELETE CASCADE
 );
