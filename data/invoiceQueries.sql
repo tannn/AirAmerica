@@ -13,7 +13,7 @@ INSERT INTO OffseasonTickets values(0, 1, 2, '20140612', '20150520', 4.3);
 /*8.*/
 SELECT SUM(PointsPerMile) FROM AwardTicket;
 /*9.*/
-SELECT COUNT(*) FROM AwardTickets WHERE Date = '2013/04/16';
+SELECT COUNT(*) FROM AwardTicket JOIN FlightInfo ON AwardTicket.AwardTicket_ID = FlightInfo.Ticket_ID WHERE FlightDate = '2013/04/16';
 /*10.*/
 SELECT PersonLastName, PersonFirstName, Address, City, State, PhoneNumber, Email, Nationality, Age, PersonCode FROM Person JOIN Passenger JOIN Email JOIN FlightInfo ON Person.Person_ID = Passenger.Person_ID AND Person.Person_ID = Email.Person_ID AND Passenger.Ticket_ID = FlightInfo.Ticket_ID WHERE FlightCode = 'ABCDEF' AND DepartureCity = 'Milwaukee' AND DepartureTime = '07:15';
 /*14.*/
