@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS Passenger;
 CREATE TABLE Address (
     Address_ID int  NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY,
     Address varchar(20)  NOT NULL,
-    State varchar(15)  NOT NULL,
+    StateProvince varchar(15)  NOT NULL,
     ZIP varchar(11)  NOT NULL,
     City varchar(15)  NOT NULL,
     Country varchar(15)  NOT NULL
