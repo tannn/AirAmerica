@@ -63,8 +63,8 @@ CREATE TABLE Invoice (
 -- Table Product
 CREATE TABLE Product (
     Product_ID int UNIQUE AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    ArrAirport_ID int NULL,
-    DepAirport_ID int NULL,
+    ArrAirport_ID int NOT NULL,
+    DepAirport_ID int NOT NULL,
     ProductType varchar(2),
     ATPointsPerMile int  NULL,
     OTSeasonStartDate varchar(8)  NULL,
