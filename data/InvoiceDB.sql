@@ -62,10 +62,10 @@ CREATE TABLE Invoice (
 
 -- Table Product
 CREATE TABLE Product (
-    Product_ID int UNIQUE AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    Product_ID int UNIQUE NOT NULL AUTO_INCREMENT PRIMARY KEY,
     ArrAirport_ID int NULL,
     DepAirport_ID int NULL,
-    ProductType varchar(2),
+    ProductType varchar(2) NOT NULL,
     ATPointsPerMile int  NULL,
     OTSeasonStartDate varchar(8)  NULL,
     OTSeasonEndDate varchar(8)  NULL,
@@ -79,14 +79,8 @@ CREATE TABLE Product (
     PlaneName varchar(15) NULL,
     ArrivalTime time NULL,
     FlightClass varchar(2)  NULL,
-    FlightCode varchar(10)  NULL,
+    FlightCode varchar(10)  NULL
     -- Foreign Keys
-    CONSTRAINT DepAirport_fk FOREIGN KEY (DepAirport_ID) REFERENCES Airport(DepAirport_ID)
-    	ON UPDATE CASCADE
-    	ON DELETE CASCADE,
-    CONSTRAINT ArrAirport_fk FOREIGN KEY (ArrAirport_ID) REFERENCES Airport(ArrAirport_ID)
-    	ON UPDATE CASCADE
-    	ON DELETE CASCADE
 );
 
 -- Table InvoiceProduct
@@ -113,16 +107,10 @@ CREATE TABLE Person (
     Email_ID int  NOT NULL,
     Address_ID int  NOT NULL,
     PersonCode varchar(10)  NOT NULL,
-    PersonFirstName varchar(10)  NOT NULL,
-    PersonLastName varchar(10)  NOT NULL,
-    PhoneNumber varchar(15)  NOT NULL,
+    FirstName varchar(10)  NOT NULL,
+    LastName varchar(10)  NOT NULL,
+    PhoneNumber varchar(15)  NOT NULL
     -- Foreign Keys
-    CONSTRAINT Email_fk FOREIGN KEY (Email_ID) REFERENCES Email(Email_ID)
-    	ON UPDATE CASCADE
-    	ON DELETE CASCADE,
-    CONSTRAINT Address_fk FOREIGN KEY (Address_ID) REFERENCES Address(Address_ID)
-    	ON UPDATE CASCADE
-    	ON DELETE CASCADE
 );
 
 -- Table Email
@@ -142,17 +130,17 @@ CREATE TABLE Passenger (
     Person_ID int  NOT NULL,
     Nationality varchar(15)  NOT NULL,
     Age int  NOT NULL,
-    SeatNumber varchar(4) NOT NULL,
+    SeatNumber varchar(4) NOT NULL
     -- Foreign Keys
-    CONSTRAINT Product_fk FOREIGN KEY (Product_ID) REFERENCES Product(Product_ID)
-    	ON UPDATE CASCADE
-    	ON DELETE CASCADE,
-    CONSTRAINT Person_fk FOREIGN KEY (Person_ID) REFERENCES Person(Person_ID)
-    	ON UPDATE CASCADE
-    	ON DELETE CASCADE
 );
 
 
 ALTER TABLE Customer ADD CONSTRAINT ContactPerson_fk FOREIGN KEY (ContactPerson_ID) REFERENCES Person(ContactPerson_ID) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE Invoice ADD CONSTRAINT SalesPerson_fk FOREIGN KEY (SalesPerson_ID) REFERENCES Person(SalesPerson_ID) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE InvoiceProduct ADD CONSTRAINT Passenger_fk FOREIGN KEY (Passenger_ID) REFERENCES Passenger(Passenger_ID) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE Product ADD CONSTRAINT ArrAirport_fk FOREIGN KEY ArrAirport_ID REFERENCES Airport(ArrAirport_ID) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE Product ADD CONSTRAINT DepAirport_fk FOREIGN KEY DepAirport_ID REFERENCES Airport(DepAirport_ID) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE Person ADD CONSTRAINT Email_fk FOREIGN KEY (Email_ID) REFERENCES Email(Email_ID) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE Person ADD CONSTRAINT Address_fk FOREIGN KEY (Address_ID) REFERENCES Address(Address_ID) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE Passenger ADD CONSTRAINT Product_fk FOREIGN KEY (Product_ID) REFERENCES Product(Product_ID) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE Passenger ADD CONSTRAINT Person_fk FOREIGN KEY (Person_ID) REFERENCES Person(Person_ID) ON UPDATE CASCADE ON DELETE CASCADE;
