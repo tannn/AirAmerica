@@ -81,10 +81,10 @@ CREATE TABLE Product (
     FlightClass varchar(2)  NULL,
     FlightCode varchar(10)  NULL,
     -- Foreign Keys
-    CONSTRAINT DepAirport_fk FOREIGN KEY DepAirport_ID REFERENCES Airport(DepAirport_ID)
+    CONSTRAINT DepAirport_fk FOREIGN KEY (DepAirport_ID) REFERENCES Airport(DepAirport_ID)
     	ON UPDATE CASCADE
     	ON DELETE CASCADE,
-    CONSTRAINT ArrAirport_fk FOREIGN KEY ArrAirport_ID REFERENCES Airport(ArrAirport_ID)
+    CONSTRAINT ArrAirport_fk FOREIGN KEY (ArrAirport_ID) REFERENCES Airport(ArrAirport_ID)
     	ON UPDATE CASCADE
     	ON DELETE CASCADE
 );
