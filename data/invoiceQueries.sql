@@ -1,7 +1,7 @@
 -- Query 1
-SELECT Person_ID, PersonCode, PersonFirstName, PersonLastName, PhoneNumber FROM Person 
+SELECT Person.Person_ID, Person.PersonCode, Person.FirstName, Person.LastName, Person.PhoneNumber FROM Person 
 JOIN Email ON Person.Person_ID = Email.Person_ID 
-JOIN Address ON Person.Address_ID = Address_ID;
+JOIN Address ON Person.Address_ID = Address.Address_ID;
 
 -- Query 2
 INSERT INTO Email (Person_ID, Email) VALUES(1, 'lpage@gmail.com');
