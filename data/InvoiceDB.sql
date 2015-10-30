@@ -93,7 +93,7 @@ CREATE TABLE InvoiceProduct (
     FlightDate date  NULL,
     Cost decimal(3,3)  NULL,
     -- Foreign Keys
-    CONSTRAINT Product_fk FOREIGN KEY (Product_ID) REFERENCES Product(Product_ID)
+    CONSTRAINT InvoiceProduct_fk FOREIGN KEY (Product_ID) REFERENCES Product(Product_ID)
     	ON UPDATE CASCADE
     	ON DELETE CASCADE,
     CONSTRAINT Invoice_fk FOREIGN KEY (Invoice_ID) REFERENCES Invoice(Invoice_ID)
@@ -118,7 +118,7 @@ CREATE TABLE Email (
     Email_ID int  NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY,
     Person_ID int  NOT NULL,
     Email varchar(30)  NOT NULL,
-    CONSTRAINT Person_fk FOREIGN KEY (Person_ID) REFERENCES Person(Person_ID)
+    CONSTRAINT EmailPerson_fk FOREIGN KEY (Person_ID) REFERENCES Person(Person_ID)
     	ON UPDATE CASCADE
     	ON DELETE CASCADE
 );
