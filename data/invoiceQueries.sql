@@ -25,7 +25,7 @@ SELECT * FROM Product JOIN InvoiceProduct ON Product.Product_ID=InvoiceProduct.P
 -- Query 6
 SELECT * FROM InvoiceProduct WHERE Passenger_ID = 1;
 
--- Query 7 (NULL data!)
+-- Query 7
 INSERT INTO Product (Product_ID, ArrAirport_ID, DepAirport_ID, ProductType, ProductPrintName, Cost, DepartureTime, PlaneName, ArrivalTime, FlightClass, FlightCode) values(1, 1, 2, 'TS', 'Ticket', 4.3, '07:40', 'Janice', '09:10', 'FC', '16904A2');
 
 -- Query 8
