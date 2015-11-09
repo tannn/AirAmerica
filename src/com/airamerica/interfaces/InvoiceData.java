@@ -23,16 +23,18 @@ import com.airamerica.utils.DatabaseInfo;
  *
  */
 public class InvoiceData {
+	
+	static int personID;
+	static int addressID;
 
 	/**
 	 * Method that removes every person record from the database
 	 */
-	public static void removeAllPersons() {
+	public static void removeAllPersons() { //Not tested
 		
 		try {
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Person");
 			ps.executeQuery();
-			//ResultSet rs =
 			
 			ps.close();
 		} catch (SQLException e1) {
@@ -46,16 +48,52 @@ public class InvoiceData {
 	 */
 	public static void addPerson(String personCode, String firstName, String lastName, 
 			String phoneNo, String street, String city, String state, 
-			String zip, String country) { }
+			String zip, String country) { //Not tested
+		try {
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("INSERT INTO Person (PersonCode, FirstName, LastName, PhoneNumber) VALUES (?,?,?,?)");
+			ps.setString(1, personCode);
+			ps.setString(2, firstName);
+			ps.setString(3, lastName);
+			ps.setString(4, phoneNo);
+			ps.executeUpdate();
+			ps = DatabaseInfo.getConnection().prepareStatement("SELECT LAST_INSERT_ID()");
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			personID = rs.getInt("LAST_INSERT_ID()");
+			
+			ps = DatabaseInfo.getConnection().prepareStatement("INSERT INTO Address (Address, City, StateProvince, Zip, Country) VALUES (?,?,?,?,?)");
+			ps.setString(1, street);
+			ps.setString(2, city);
+			ps.setString(3, state);
+			ps.setString(4, zip);
+			ps.setString(5, country);
+			ps.executeUpdate();
+			ps = DatabaseInfo.getConnection().prepareStatement("SELECT LAST_INSERT_ID()");
+			rs = ps.executeQuery();
+			rs.next();
+			addressID = rs.getInt("LAST_INSERT_ID()");
+			
+			ps = DatabaseInfo.getConnection().prepareStatement("UPDATE Person SET Address_ID = ? WHERE Person_ID = ?");
+			ps.setInt(1, addressID);
+			ps.setInt(2,  personID);
+			ps.executeUpdate();
+			
+			personID = 0;
+			addressID = 0;
+			
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+	}
 
 	/**
 	 * Method that removes every airport record from the database
 	 */
-	public static void removeAllAirports() { 
+	public static void removeAllAirports() { //Not tested
 		try {
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Airport");
 			ps.executeQuery();
-			//ResultSet rs =
 			
 			ps.close();
 		} catch (SQLException e1) {
@@ -92,11 +130,10 @@ public class InvoiceData {
 	/**
 	 * Removes all product records from the database
 	 */
-	public static void removeAllProducts() { 
+	public static void removeAllProducts() { //Not tested
 		try {
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Product");
 			ps.executeQuery();
-			//ResultSet rs =
 			
 			ps.close();
 		} catch (SQLException e1) {
@@ -159,7 +196,7 @@ public class InvoiceData {
 	/**
 	 * Removes all invoice records from the database
 	 */
-	public static void removeAllInvoices() { //Does this include InvoiceProduct?
+	public static void removeAllInvoices() { //Does this include InvoiceProduct? Not tested
 		try {
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Invoice");
 			ps.executeQuery();
