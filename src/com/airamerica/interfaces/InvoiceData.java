@@ -31,7 +31,8 @@ public class InvoiceData {
 		
 		try {
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Person");
-			ResultSet rs = ps.executeQuery();
+			ps.executeQuery();
+			//ResultSet rs =
 			
 			ps.close();
 		} catch (SQLException e1) {
@@ -50,7 +51,17 @@ public class InvoiceData {
 	/**
 	 * Method that removes every airport record from the database
 	 */
-	public static void removeAllAirports() { }
+	public static void removeAllAirports() { 
+		try {
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Airport");
+			ps.executeQuery();
+			//ResultSet rs =
+			
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+	}
 	
 	/**
 	 * Method to add a airport record to the database with the provided data. 
@@ -81,7 +92,18 @@ public class InvoiceData {
 	/**
 	 * Removes all product records from the database
 	 */
-	public static void removeAllProducts() { }
+	public static void removeAllProducts() { 
+		try {
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Product");
+			ps.executeQuery();
+			//ResultSet rs =
+			
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
+	}
 
 	/**
 	 * Adds an standardTicket record to the database with the
@@ -137,7 +159,17 @@ public class InvoiceData {
 	/**
 	 * Removes all invoice records from the database
 	 */
-	public static void removeAllInvoices() { }
+	public static void removeAllInvoices() { //Does this include InvoiceProduct?
+		try {
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Invoice");
+			ps.executeQuery();
+			//ResultSet rs =
+			
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+	}
 	
 	/**
 	 * Adds an invoice record to the database with the given data.  
