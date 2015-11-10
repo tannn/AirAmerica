@@ -15,6 +15,13 @@ package com.airamerica.interfaces;
  * your database instead of the .dat files.
  */
 
+/**
+ * TODO:
+ * - Test all methods (including: set up database on CSE)
+ * - Figure out what 'identity' is for addPassengerToInvoice()
+ * - Change report generation to read database instead of data files
+ */
+
 import java.sql.*;
 import com.airamerica.utils.DatabaseInfo;
 
@@ -107,11 +114,11 @@ public class InvoiceData {
 	public static void addAirport(String airportCode, String name, String street, String city, String state, String zip,
 			String country, int latdegs, int latmins, int londegs, int lonmins, double passengerFacilityFee) { // Not
 																												// tested
-		try { 
-			
+		try {
+
 			int airportID;
 			int addressID;
-			
+
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
 					"INSERT INTO Airport (AirportCode, AirportName, LatDeg, LatMin, LongDeg, LongMin, PassengerFee) VALUES (?,?,?,?,?,?,?)");
 			ps.setString(1, airportCode);
@@ -126,7 +133,7 @@ public class InvoiceData {
 			ResultSet rs = ps.executeQuery();
 			rs.next();
 			airportID = rs.getInt("LAST_INSERT_ID()");
-			
+
 			ps = DatabaseInfo.getConnection().prepareStatement(
 					"INSERT INTO Address (Address, City, StateProvince, Zip, Country) VALUES (?,?,?,?,?)");
 			ps.setString(1, street);
@@ -139,8 +146,9 @@ public class InvoiceData {
 			rs = ps.executeQuery();
 			rs.next();
 			addressID = rs.getInt("LAST_INSERT_ID()");
-			
-			ps = DatabaseInfo.getConnection().prepareStatement("UPDATE Airport SET Address_ID = ? WHERE AIrport_ID = ?");
+
+			ps = DatabaseInfo.getConnection()
+					.prepareStatement("UPDATE Airport SET Address_ID = ? WHERE Airport_ID = ?");
 			ps.setInt(1, addressID);
 			ps.setInt(2, airportID);
 			ps.executeUpdate();
@@ -202,7 +210,7 @@ public class InvoiceData {
 	 */
 	public static void addCustomer(String customerCode, String customerType, String primaryContactPersonCode,
 			String name, int airlineMiles) {
-		try { 
+		try {
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
 					"INSERT INTO Customer (CustomerCode, CustomerType, ContactPerson_ID, CustomerName, CustomerMiles) VALUES (?,?,(SELECT Person_ID FROM Person WHERE PersonCode = ?),?,?)");
 			ps.setString(1, customerCode);
@@ -238,6 +246,23 @@ public class InvoiceData {
 	 */
 	public static void addStandardTicket(String productCode, String depAirportCode, String arrAirportCode,
 			String depTime, String arrTime, String flightNo, String flightClass, String aircraftType) {
+		try {
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+					"INSERT INTO Product (ProductType, ProductCode, DepAirport_ID, ArrAirport_ID, DepartureTime, ArrivalTime, FlightClass, PlaneName, FlightNumber) VALUES ('TS',(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),?,?,?,?,?,?)");
+			ps.setString(2, productCode);
+			ps.setString(3, depAirportCode);
+			ps.setString(4, arrAirportCode);
+			ps.setString(5, depTime);
+			ps.setString(6, arrTime);
+			ps.setString(7, flightClass);
+			ps.setString(8, aircraftType);
+			ps.setString(9, flightNo);
+			ps.executeUpdate();
+
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	/**
@@ -246,6 +271,26 @@ public class InvoiceData {
 	public static void addOffSeasonTicket(String productCode, String seasonStartDate, String seasonEndDate,
 			String depAirportCode, String arrAirportCode, String depTime, String arrTime, String flightNo,
 			String flightClass, String aircraftType, double rebate) {
+		try {
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+					"INSERT INTO Product (ProductType, ProductCode, DepAirport_ID, ArrAirport_ID, DepartureTime, ArrivalTime, FlightClass, PlaneName, OTSeasonStartDate, OTSeasonEndDate, OTRebate, FlightNumber) VALUES ('TO',(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),?,?,?,?,?,?,?,?,?)");
+			ps.setString(2, productCode);
+			ps.setString(3, depAirportCode);
+			ps.setString(4, arrAirportCode);
+			ps.setString(5, depTime);
+			ps.setString(6, arrTime);
+			ps.setString(7, flightClass);
+			ps.setString(8, aircraftType);
+			ps.setString(9, seasonStartDate);
+			ps.setString(10, seasonEndDate);
+			ps.setDouble(11, rebate);
+			ps.setString(12, flightNo);
+			ps.executeUpdate();
+
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	/**
@@ -253,20 +298,49 @@ public class InvoiceData {
 	 */
 	public static void addAwardsTicket(String productCode, String depAirportCode, String arrAirportCode, String depTime,
 			String arrTime, String flightNo, String flightClass, String aircraftType, double pointsPerMile) {
+		try {
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+					"INSERT INTO Product (ProductType, ProductCode, DepAirport_ID, ArrAirport_ID, DepartureTime, ArrivalTime, FlightClass, PlaneName, ATPointsPerMile, FlightNumber) VALUES ('TA',(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),?,?,?,?,?,?,?)");
+			ps.setString(2, productCode);
+			ps.setString(3, depAirportCode);
+			ps.setString(4, arrAirportCode);
+			ps.setString(5, depTime);
+			ps.setString(6, arrTime);
+			ps.setString(7, flightClass);
+			ps.setString(8, aircraftType);
+			ps.setDouble(9, pointsPerMile);
+			ps.setString(10, flightNo);
+			ps.executeUpdate();
+
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	/**
 	 * Adds a CheckedBaggage record to the database with the provided data.
 	 */
 	public static void addCheckedBaggage(String productCode, String ticketCode) {
-		
+		try {
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+					"INSERT INTO Product (ProductType, ProductCode, TicketCode) VALUES ('SC',?,?)");
+			ps.setString(2, productCode);
+			ps.setString(3, ticketCode);
+
+			ps.executeUpdate();
+
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	/**
 	 * Adds a Insurance record to the database with the provided data.
 	 */
 	public static void addInsurance(String productCode, String productName, String ageClass, double costPerMile) {
-		try { 
+		try {
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
 					"INSERT INTO Product (ProductType, ProductCode, ProductPrintName, InsuranceAgeClass, InsuranceCostPerMile) VALUES ('SI',?,?,?,?)");
 			ps.setString(2, productCode);
@@ -284,8 +358,9 @@ public class InvoiceData {
 	/**
 	 * Adds a SpecialAssistance record to the database with the provided data.
 	 */
-	public static void addSpecialAssistance(String productCode, String assistanceType) { //Not tested
-		try { 
+	public static void addSpecialAssistance(String productCode, String assistanceType) { // Not
+																							// tested
+		try {
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
 					"INSERT INTO Product (ProductType, ProductCode, SATypeOfService) VALUES ('SS',?,?)");
 			ps.setString(2, productCode);
@@ -301,7 +376,8 @@ public class InvoiceData {
 	/**
 	 * Adds a refreshment record to the database with the provided data.
 	 */
-	public static void addRefreshment(String productCode, String name, double cost) { //Not tested
+	public static void addRefreshment(String productCode, String name, double cost) { // Not
+																						// tested
 		try {
 
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
@@ -320,8 +396,7 @@ public class InvoiceData {
 	/**
 	 * Removes all invoice records from the database
 	 */
-	public static void removeAllInvoices() { // Does this include
-												// InvoiceProduct? Not tested
+	public static void removeAllInvoices() { // Not tested
 		try {
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Invoice");
 			ps.executeQuery();
@@ -337,8 +412,9 @@ public class InvoiceData {
 	/**
 	 * Adds an invoice record to the database with the given data.
 	 */
-	public static void addInvoice(String invoiceCode, String customerCode, String salesPersonCode, String invoiceDate) { //Not tested
-		try { 
+	public static void addInvoice(String invoiceCode, String customerCode, String salesPersonCode, String invoiceDate) { // Not
+																															// tested
+		try {
 
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
 					"INSERT INTO Invoice (InvoiceCode, Customer_ID, SalesPerson_ID, InvoiceDate) VALUES (?,(SELECT Customer_ID FROM Customer WHERE CustomerCode = ?),(SELECT Person_ID FROM Person WHERE PersonCode = ?),?)");
@@ -361,6 +437,20 @@ public class InvoiceData {
 	 */
 	public static void addTicketToInvoice(String invoiceCode, String productCode, String travelDate,
 			String ticketNote) {
+		try {
+
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+					"INSERT INTO InvoiceProduct (Invoice_ID, Product_ID, FlightDate, TicketNote) VALUES ((SELECT Invoice_ID FROM Invoice WHERE InvoiceCode = ?),(SELECT Product_ID FROM Product WHERE ProductCode = ?),?,?)");
+			ps.setString(1, invoiceCode);
+			ps.setString(2, productCode);
+			ps.setString(3, travelDate);
+			ps.setString(4, ticketNote);
+			ps.executeUpdate();
+
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	/**
@@ -368,7 +458,34 @@ public class InvoiceData {
 	 * <code>invoiceCode</code>
 	 */
 	public static void addPassengerInformation(String invoiceCode, String productCode, String personCode,
-			String identity, int age, String nationality, String seat) {
+			String identity, int age, String nationality, String seat) { // Identity?
+		try {
+
+			int passengerID;
+
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+					"INSERT INTO Passenger (Product_ID, Person_ID, Age, Nationality, SeatNumber) VALUES ((SELECT Product_ID FROM Product WHERE ProductCode = ?),(SELECT Person_ID FROM Person WHERE PersonCode = ?),?,?,?)");
+			ps.setString(1, productCode);
+			ps.setString(2, personCode);
+			ps.setInt(3, age);
+			ps.setString(4, nationality);
+			ps.setString(5, seat);
+			ps.executeUpdate();
+			ps = DatabaseInfo.getConnection().prepareStatement("SELECT LAST_INSERT_ID()");
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			passengerID = rs.getInt("LAST_INSERT_ID()");
+
+			ps = DatabaseInfo.getConnection()
+					.prepareStatement("UPDATE InvoiceProduct SET Passenger_ID = ? WHERE Invoice_ID = (SELECT Invoice_ID FROM Invoice WHERE InvoiceCode = ?)");
+			ps.setInt(1, passengerID);
+			ps.setString(2, invoiceCode);
+			ps.executeUpdate();
+
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	/**
@@ -376,7 +493,22 @@ public class InvoiceData {
 	 * an invoice corresponding to the provided <code>invoiceCode</code> with
 	 * the given number of quantity and associated ticket information
 	 */
-	public static void addInsuranceToInvoice(String invoiceCode, String productCode, int quantity, String ticketCode) {
+	public static void addInsuranceToInvoice(String invoiceCode, String productCode, int quantity, String ticketCode) { // Not
+																														// complete
+		try {
+
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+					"INSERT INTO InvoiceProduct (Invoice_ID, Product_ID, Quantity, TicketCode) VALUES ((SELECT Invoice_ID FROM Invoice WHERE InvoiceCode = ?),(SELECT Product_ID FROM Product WHERE ProductCode = ?),?,?)");
+			ps.setString(1, invoiceCode);
+			ps.setString(2, productCode);
+			ps.setInt(3, quantity);
+			ps.setString(4, ticketCode);
+			ps.executeUpdate();
+
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	/**
@@ -385,6 +517,19 @@ public class InvoiceData {
 	 * the given number of quantity.
 	 */
 	public static void addCheckedBaggageToInvoice(String invoiceCode, String productCode, int quantity) {
+		try {
+
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+					"INSERT INTO InvoiceProduct (Invoice_ID, Product_ID, Quantity) VALUES ((SELECT Invoice_ID FROM Invoice WHERE InvoiceCode = ?),(SELECT Product_ID FROM Product WHERE ProductCode = ?),?)");
+			ps.setString(1, invoiceCode);
+			ps.setString(2, productCode);
+			ps.setInt(3, quantity);
+			ps.executeUpdate();
+
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	/**
@@ -393,6 +538,19 @@ public class InvoiceData {
 	 * <code>invoiceCode</code> with the given number of quantity.
 	 */
 	public static void addSpecialAssistanceToInvoice(String invoiceCode, String productCode, String personCode) {
+		try {
+
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+					"INSERT INTO InvoiceProduct (Invoice_ID, Product_ID, Passenger_ID) VALUES ((SELECT Invoice_ID FROM Invoice WHERE InvoiceCode = ?),(SELECT Product_ID FROM Product WHERE ProductCode = ?),(SELECT Person_ID FROM Person WHERE PersonCode = ?))");
+			ps.setString(1, invoiceCode);
+			ps.setString(2, productCode);
+			ps.setString(3, personCode);
+			ps.executeUpdate();
+
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	/**
@@ -401,5 +559,18 @@ public class InvoiceData {
 	 * the given number of quantity.
 	 */
 	public static void addRefreshmentToInvoice(String invoiceCode, String productCode, int quantity) {
+		try {
+
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+					"INSERT INTO InvoiceProduct (Invoice_ID, Product_ID, Quantity) VALUES ((SELECT Invoice_ID FROM Invoice WHERE InvoiceCode = ?),(SELECT Product_ID FROM Product WHERE ProductCode = ?),?)");
+			ps.setString(1, invoiceCode);
+			ps.setString(2, productCode);
+			ps.setInt(3, quantity);
+			ps.executeUpdate();
+
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
 }
