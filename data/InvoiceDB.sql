@@ -79,7 +79,9 @@ CREATE TABLE Product (
     PlaneName varchar(15) NULL,
     ArrivalTime time NULL,
     FlightClass varchar(2)  NULL,
-    ProductCode varchar(10)  NULL
+    ProductCode varchar(10)  NULL,
+    TicketCode varchar(10) NULL,
+    FlightNumber varchar(10) NULL
     -- Foreign Keys
 );
 
@@ -92,6 +94,7 @@ CREATE TABLE InvoiceProduct (
     Quantity int  NULL,
     FlightDate date  NULL,
     Cost decimal(3,3)  NULL,
+    TicketNote varchar(15) NULL,
     -- Foreign Keys
     CONSTRAINT InvoiceProduct_fk FOREIGN KEY (Product_ID) REFERENCES Product(Product_ID)
     	ON UPDATE CASCADE
