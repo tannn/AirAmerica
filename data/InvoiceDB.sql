@@ -23,7 +23,7 @@ CREATE TABLE Address (
 -- Table Airport
 CREATE TABLE Airport (
     Airport_ID int  NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY,
-    Address_ID int  NOT NULL,
+    Address_ID int  NULL,
     AirportCode varchar(10)  NOT NULL,
     AirportName varchar(30)  NOT NULL,
     LongDeg int  NOT NULL,
@@ -79,7 +79,7 @@ CREATE TABLE Product (
     PlaneName varchar(15) NULL,
     ArrivalTime time NULL,
     FlightClass varchar(2)  NULL,
-    FlightCode varchar(10)  NULL
+    ProductCode varchar(10)  NULL
     -- Foreign Keys
 );
 
@@ -104,8 +104,8 @@ CREATE TABLE InvoiceProduct (
 -- Table Person
 CREATE TABLE Person (
     Person_ID int  NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY,
-    Email_ID int  NOT NULL,
-    Address_ID int  NOT NULL,
+    Email_ID int  NULL,
+    Address_ID int  NULL,
     PersonCode varchar(10)  NOT NULL,
     FirstName varchar(10)  NOT NULL,
     LastName varchar(10)  NOT NULL,
