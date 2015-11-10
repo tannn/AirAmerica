@@ -107,7 +107,48 @@ public class InvoiceData {
 	public static void addAirport(String airportCode, String name, String street, String city, String state, String zip,
 			String country, int latdegs, int latmins, int londegs, int lonmins, double passengerFacilityFee) { // Not
 																												// tested
+		try { 
+			
+			int airportID;
+			int addressID;
+			
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+					"INSERT INTO Airport (AirportCode, AirportName, LatDeg, LatMin, LongDeg, LongMin, PassengerFee) VALUES (?,?,?,?,?,?,?)");
+			ps.setString(1, airportCode);
+			ps.setString(2, name);
+			ps.setInt(3, latdegs);
+			ps.setInt(4, latmins);
+			ps.setInt(5, londegs);
+			ps.setInt(6, lonmins);
+			ps.setDouble(7, passengerFacilityFee);
+			ps.executeUpdate();
+			ps = DatabaseInfo.getConnection().prepareStatement("SELECT LAST_INSERT_ID()");
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			airportID = rs.getInt("LAST_INSERT_ID()");
+			
+			ps = DatabaseInfo.getConnection().prepareStatement(
+					"INSERT INTO Address (Address, City, StateProvince, Zip, Country) VALUES (?,?,?,?,?)");
+			ps.setString(1, street);
+			ps.setString(2, city);
+			ps.setString(3, state);
+			ps.setString(4, zip);
+			ps.setString(5, country);
+			ps.executeUpdate();
+			ps = DatabaseInfo.getConnection().prepareStatement("SELECT LAST_INSERT_ID()");
+			rs = ps.executeQuery();
+			rs.next();
+			addressID = rs.getInt("LAST_INSERT_ID()");
+			
+			ps = DatabaseInfo.getConnection().prepareStatement("UPDATE Airport SET Address_ID = ? WHERE AIrport_ID = ?");
+			ps.setInt(1, addressID);
+			ps.setInt(2, airportID);
+			ps.executeUpdate();
 
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	/**
@@ -119,7 +160,7 @@ public class InvoiceData {
 			int emailID;
 
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
-					"INSERT INTO Email (Person_ID, Email) VALUES (SELECT Person_ID FROM Person WHERE PersonCode = ?,?)");
+					"INSERT INTO Email (Person_ID, Email) VALUES ((SELECT Person_ID FROM Person WHERE PersonCode = ?),?)");
 			ps.setString(1, personCode);
 			ps.setString(2, email);
 			ps.executeUpdate();
@@ -161,6 +202,20 @@ public class InvoiceData {
 	 */
 	public static void addCustomer(String customerCode, String customerType, String primaryContactPersonCode,
 			String name, int airlineMiles) {
+		try { 
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+					"INSERT INTO Customer (CustomerCode, CustomerType, ContactPerson_ID, CustomerName, CustomerMiles) VALUES (?,?,(SELECT Person_ID FROM Person WHERE PersonCode = ?),?,?)");
+			ps.setString(1, customerCode);
+			ps.setString(2, customerType);
+			ps.setString(3, primaryContactPersonCode);
+			ps.setString(4, name);
+			ps.setInt(5, airlineMiles);
+			ps.executeUpdate();
+
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	/**
@@ -211,19 +266,43 @@ public class InvoiceData {
 	 * Adds a Insurance record to the database with the provided data.
 	 */
 	public static void addInsurance(String productCode, String productName, String ageClass, double costPerMile) {
+		try { 
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+					"INSERT INTO Product (ProductType, ProductCode, ProductPrintName, InsuranceAgeClass, InsuranceCostPerMile) VALUES ('SI',?,?,?,?)");
+			ps.setString(2, productCode);
+			ps.setString(3, productName);
+			ps.setString(4, ageClass);
+			ps.setDouble(5, costPerMile);
+			ps.executeUpdate();
+
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	/**
 	 * Adds a SpecialAssistance record to the database with the provided data.
 	 */
-	public static void addSpecialAssistance(String productCode, String assistanceType) {
+	public static void addSpecialAssistance(String productCode, String assistanceType) { //Not tested
+		try { 
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+					"INSERT INTO Product (ProductType, ProductCode, SATypeOfService) VALUES ('SS',?,?)");
+			ps.setString(2, productCode);
+			ps.setString(3, assistanceType);
+			ps.executeUpdate();
+
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	/**
 	 * Adds a refreshment record to the database with the provided data.
 	 */
-	public static void addRefreshment(String productCode, String name, double cost) {
-		try { //Not tested
+	public static void addRefreshment(String productCode, String name, double cost) { //Not tested
+		try {
 
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
 					"INSERT INTO Product (ProductType, ProductPrintName, Cost, ProductCode) VALUES ('SR',?,?,?)");
@@ -258,7 +337,21 @@ public class InvoiceData {
 	/**
 	 * Adds an invoice record to the database with the given data.
 	 */
-	public static void addInvoice(String invoiceCode, String customerCode, String salesPersonCode, String invoiceDate) {
+	public static void addInvoice(String invoiceCode, String customerCode, String salesPersonCode, String invoiceDate) { //Not tested
+		try { 
+
+			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+					"INSERT INTO Invoice (InvoiceCode, Customer_ID, SalesPerson_ID, InvoiceDate) VALUES (?,(SELECT Customer_ID FROM Customer WHERE CustomerCode = ?),(SELECT Person_ID FROM Person WHERE PersonCode = ?),?)");
+			ps.setString(1, invoiceCode);
+			ps.setString(2, customerCode);
+			ps.setString(3, salesPersonCode);
+			ps.setString(4, invoiceDate);
+			ps.executeUpdate();
+
+			ps.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	/**
