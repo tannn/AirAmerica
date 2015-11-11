@@ -1,10 +1,17 @@
 package com.airamerica;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.Scanner;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.apache.log4j.Logger;
+
+import com.airamerica.interfaces.InvoiceData;
+import com.airamerica.utils.DatabaseInfo;
 
 public class Customer {
+
+	public static Logger log = Logger.getLogger(InvoiceData.class);
 
 	private String customerName;
 	private String customerCode;
@@ -50,73 +57,92 @@ public class Customer {
 
 	/**
 	 * 
-	 * @param code Code of customer
-	 * @return	Customer's name (Last, First)
+	 * @param code
+	 *            Code of customer
+	 * @return Customer's name (Last, First)
 	 */
 	public static String getCustomerName(String code) {
-		Scanner customerFile = null;
+		String name = "";
 		try {
-			customerFile = new Scanner(new FileReader("data/Customers.dat"));
-		} catch (FileNotFoundException e) {
-			System.out.println("Customers.dat not found.");
+			PreparedStatement ps = DatabaseInfo.getConnection()
+					.prepareStatement("SELECT ContactPerson_ID FROM Customer WHERE CustomerCode = ?");
+			ps.setString(1, code);
+			ResultSet rs = ps.executeQuery();
+
+			int personCode = rs.getInt("ContactPerson_ID");
+
+			ps = DatabaseInfo.getConnection().prepareStatement("SELECT * FROM Person WHERE Person_ID = ?");
+			ps.setInt(1, personCode);
+			rs = ps.executeQuery();
+
+			name = rs.getString("LastName") + ", " + rs.getString("FirstName");
+
+		} catch (SQLException e1) {
+			log.error("Failed to retrieve customer name for personCode " + code, e1);
 		}
-		while (customerFile.hasNextLine()) {
-			String line = customerFile.nextLine();
-			String[] customerData = line.split(";");
-			if (customerData[0].equals(code)) {
-				return customerData[3];
-			}
-		}
-		return null;
+		return name;
 	}
-	
+
 	/**
 	 * 
-	 * @param code Code of customer
-	 * @return	Corporate, general, or government type
+	 * @param code
+	 *            Code of customer
+	 * @return Corporate, general, or government type
 	 */
 	public static String getCustomerType(String code) {
-		Scanner customerFile = null;
+
+		String type = "";
+
 		try {
-			customerFile = new Scanner(new FileReader("data/Customers.dat"));
-		} catch (FileNotFoundException e) {
-			System.out.println("Customers.dat not found.");
+			PreparedStatement ps = DatabaseInfo.getConnection()
+					.prepareStatement("SELECT CustomerType FROM Customer WHERE CustomerCode = ?");
+			ps.setString(1, code);
+			ResultSet rs = ps.executeQuery();
+
+			type = rs.getString("CustomerType");
+
+		} catch (SQLException e1) {
+			log.error("Failed to retrieve customer name for personCode " + code, e1);
 		}
-		while (customerFile.hasNextLine()) {
-			String line = customerFile.nextLine();
-			String[] customerData = line.split(";");
-			if (customerData[0].equals(code)) {
-				if (customerData[1].equals("C"))
-					return "[CORPORATE]";
-				else if (customerData[1].equals("G"))
-					return "[GENERAL]";
-				else if (customerData[1].equals("V"))
-					return "[GOVERNMENT]";
-			}
-		}
-		return null;
+
+		if (type.equals("C"))
+			return "[CORPORATE]";
+		else if (type.equals("G"))
+			return "[GENERAL]";
+		else if (type.equals("V"))
+			return "[GOVERNMENT]";
+
+		return type;
 	}
-	
+
 	/**
 	 * 
-	 * @param code Code of customer
-	 * @return	Code of Person who represents Customer
+	 * @param code
+	 *            Code of customer
+	 * @return Code of Person who represents Customer
 	 */
 	public static String getCustomerContactCode(String code) {
-		Scanner customerFile = null;
+		String personCode = "";
+
 		try {
-			customerFile = new Scanner(new FileReader("data/Customers.dat"));
-		} catch (FileNotFoundException e) {
-			System.out.println("Customers.dat not found.");
+			PreparedStatement ps = DatabaseInfo.getConnection()
+					.prepareStatement("SELECT CustomerCode FROM Customer WHERE CustomerCode = ?");
+			ps.setString(1, code);
+			ResultSet rs = ps.executeQuery();
+
+			int personID = rs.getInt("ContactPerson_ID");
+
+			ps = DatabaseInfo.getConnection().prepareStatement("SELECT PersonCode FROM Person WHERE Person_ID = ?");
+			ps.setInt(1, personID);
+			rs = ps.executeQuery();
+
+			personCode = rs.getString("PersonCode");
+
+		} catch (SQLException e1) {
+			log.error("Failed to retrieve customer name for personCode " + code, e1);
 		}
-		while (customerFile.hasNextLine()) {
-			String line = customerFile.nextLine();
-			String[] customerData = line.split(";");
-			if (customerData[0].equals(code)) {
-				return customerData[2];
-			}
-		}
-		return null;
+		
+		return personCode;
 	}
-	
+
 }
