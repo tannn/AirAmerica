@@ -36,7 +36,7 @@ public class InvoiceData {
 	/**
 	 * Method that removes every person record from the database
 	 */
-	public static void removeAllPersons() { // Not tested
+	public static void removeAllPersons() {
 
 		try {
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Person");
@@ -53,8 +53,7 @@ public class InvoiceData {
 	 * Method to add a person record to the database with the provided data.
 	 */
 	public static void addPerson(String personCode, String firstName, String lastName, String phoneNo, String street,
-			String city, String state, String zip, String country) { // Not
-																		// tested
+			String city, String state, String zip, String country) {
 		int personID;
 		int addressID;
 
@@ -98,7 +97,7 @@ public class InvoiceData {
 	/**
 	 * Method that removes every airport record from the database
 	 */
-	public static void removeAllAirports() { // Not tested
+	public static void removeAllAirports() {
 		try {
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Airport");
 			ps.executeQuery();
@@ -193,7 +192,7 @@ public class InvoiceData {
 	/**
 	 * Method that removes every customer record from the database
 	 */
-	public static void removeAllCustomers() { // Not tested
+	public static void removeAllCustomers() {
 
 		try {
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Customer");
@@ -230,7 +229,7 @@ public class InvoiceData {
 	/**
 	 * Removes all product records from the database
 	 */
-	public static void removeAllProducts() { // Not tested
+	public static void removeAllProducts() {
 		try {
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Product");
 			ps.executeQuery();
@@ -359,8 +358,7 @@ public class InvoiceData {
 	/**
 	 * Adds a SpecialAssistance record to the database with the provided data.
 	 */
-	public static void addSpecialAssistance(String productCode, String assistanceType) { // Not
-																							// tested
+	public static void addSpecialAssistance(String productCode, String assistanceType) {
 		try {
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
 					"INSERT INTO Product (ProductType, ProductCode, SATypeOfService) VALUES ('SS',?,?)");
@@ -377,8 +375,7 @@ public class InvoiceData {
 	/**
 	 * Adds a refreshment record to the database with the provided data.
 	 */
-	public static void addRefreshment(String productCode, String name, double cost) { // Not
-																						// tested
+	public static void addRefreshment(String productCode, String name, double cost) {
 		try {
 
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
@@ -413,8 +410,7 @@ public class InvoiceData {
 	/**
 	 * Adds an invoice record to the database with the given data.
 	 */
-	public static void addInvoice(String invoiceCode, String customerCode, String salesPersonCode, String invoiceDate) { // Not
-																															// tested
+	public static void addInvoice(String invoiceCode, String customerCode, String salesPersonCode, String invoiceDate) {
 		try {
 
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
@@ -494,8 +490,7 @@ public class InvoiceData {
 	 * an invoice corresponding to the provided <code>invoiceCode</code> with
 	 * the given number of quantity and associated ticket information
 	 */
-	public static void addInsuranceToInvoice(String invoiceCode, String productCode, int quantity, String ticketCode) { // Not
-																														// complete
+	public static void addInsuranceToInvoice(String invoiceCode, String productCode, int quantity, String ticketCode) {
 		try {
 
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
