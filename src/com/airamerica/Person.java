@@ -48,7 +48,7 @@ public class Person {
 
 		try {
 			PreparedStatement ps = DatabaseInfo.getConnection()
-					.prepareStatement("SELECT * FROM Person WHERE PersonCode = ?");
+					.prepareStatement("SELECT LastName, FirstName, PhoneNumber, Address_ID, Person_ID FROM Person WHERE PersonCode = ?");
 			ps.setString(1, personCode);
 			ResultSet rs = ps.executeQuery();
 
@@ -57,6 +57,7 @@ public class Person {
 			this.phoneNumber = rs.getString("PhoneNumber");
 
 			int addressID = rs.getInt("Address_ID");
+			int personID = rs.getInt("Person_ID");
 
 			if (rs.getString("Address_ID") != null) {
 				ps = DatabaseInfo.getConnection().prepareStatement("SELECT * FROM Address WHERE Address_ID = ?");
@@ -68,7 +69,8 @@ public class Person {
 						addressInfo.getString("Country"));
 			}
 
-			ps = DatabaseInfo.getConnection().prepareStatement("SELECT * FROM Email WHERE Person_ID = ?");
+			ps = DatabaseInfo.getConnection().prepareStatement("SELECT Email FROM Email WHERE Person_ID = ?");
+			ps.setInt(1, personID);
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
