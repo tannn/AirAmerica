@@ -1,14 +1,21 @@
 package com.airamerica;
 
+import com.airamerica.utils.DatabaseInfo;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author EPiquette
  */
-public class Refreshment extends Services {
+public class Refreshment extends Service {
 
 	private String name;
 	private double cost;
@@ -24,20 +31,23 @@ public class Refreshment extends Services {
 	public Refreshment(String productCode, int quantity) {
 		super(productCode, "SR");
 		this.quantity = quantity;
-		Scanner productFile = null;
-		try {
-			productFile = new Scanner(new FileReader("data/Products.dat"));
-		} catch (FileNotFoundException e) {
-			System.out.println("Products.dat not found.");
-		}
-		while (productFile.hasNextLine()) {
-			String line = productFile.nextLine();
-			String[] productData = line.split(";");
-			if (productCode.equals(productData[0]) && "SR".equals(productData[1])) {
-				this.name = productData[2];
-				this.cost = Double.parseDouble(productData[3]);
-			}
-		}
+                
+                Connection conn = DatabaseInfo.getConnection();
+                PreparedStatement ps;
+                ResultSet rs;
+                String getRefreshment = "select ProductPrintName, Cost from Product where ProductCode = ?";
+            try {                
+                ps = conn.prepareStatement(getRefreshment);
+                ps.setString(1, this.getProductCode());
+                rs = ps.executeQuery();
+                rs.next();
+                this.name = rs.getString("ProductPrintName");
+                this.cost = rs.getDouble("Cost");
+                rs.close();
+                ps.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(Ticket.class.getName()).log(Level.SEVERE, null, ex);
+            }
 	}
 
 	public String getName() {
