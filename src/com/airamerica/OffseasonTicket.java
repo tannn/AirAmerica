@@ -4,55 +4,62 @@
  */
 package com.airamerica;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import com.airamerica.utils.DatabaseInfo;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author TMarino
  */
-public class OffseasonTicket extends Ticket {
-
+public class OffseasonTicket extends Ticket{
+	
 	private String seasonStartDate;
 	private String seasonEndDate;
-	private String rebate;
+	private double rebate;
 
-	public OffseasonTicket(String productCode, String seasonStartDate, String seasonEndDate, String depAirportCode,
-			String arrAirportCode, String depTime, String arrTime, String flightNo, String flightClass,
-			String aircraftType, String rebate, String date, String seat, ArrayList<Person> ticketHolders,
-			String ticketNote) {
-		super(depAirportCode, arrAirportCode, depTime, arrTime, flightNo, flightClass, aircraftType, date, seat,
-				ticketHolders, ticketNote, productCode, "TO");
-		this.rebate = rebate;
-		this.seasonEndDate = seasonEndDate;
-		this.seasonStartDate = seasonStartDate;
+        public OffseasonTicket(String productCode, String seasonStartDate,
+                String seasonEndDate, String depAirportCode, String arrAirportCode,
+		String depTime, String arrTime, String flightNo, String flightClass,
+                String aircraftType, String rebate, String date, String seat,
+                ArrayList<Person> ticketHolders, String ticketNote) {
+		super(depAirportCode,arrAirportCode,depTime,arrTime,flightNo,flightClass,
+                        aircraftType,date,seat,ticketHolders,ticketNote,productCode,"TO");
+                this.rebate = Double.parseDouble(rebate);
+                this.seasonEndDate = seasonEndDate;
+                this.seasonStartDate = seasonStartDate;
 	}
-
-	public OffseasonTicket(String productCode, String date, String seat, ArrayList<Person> ticketHolders,
-			String ticketNote) {
-		super(productCode, "TO", date, seat, ticketHolders, ticketNote);
-		Scanner productFile = null;
-		try {
-			productFile = new Scanner(new FileReader("data/Products.dat"));
-		} catch (FileNotFoundException e) {
-			System.out.println("Products.dat not found.");
-		}
-		while (productFile.hasNextLine()) {
-			String line = productFile.nextLine();
-			String[] productData = line.split(";");
-			if (productCode.equals(productData[0]) && "TO".equals(productData[1])) {
-				this.rebate = productData[2];
-				this.seasonEndDate = productData[3];
-				this.seasonStartDate = productData[11];
-			}
-		}
-	}
-	
-	public double getFee() {
-		return 20.00;
-	}
+        
+        public OffseasonTicket(String productCode, String date, String seat,
+                ArrayList<Person> ticketHolders, String ticketNote) {
+		super(productCode, "TO", date,seat,ticketHolders,ticketNote);
+                
+        
+        Connection conn = DatabaseInfo.getConnection();
+                PreparedStatement ps;
+                ResultSet rs;
+                String getInsurance = "select OTRebate, OTSeasonEndDate, "
+                        + "OTSeasonStartDate from Product where ProductCode = ?";
+            try {                
+                ps = conn.prepareStatement(getInsurance);
+                ps.setString(1, this.getProductCode());
+                rs = ps.executeQuery();
+                rs.next();
+                this.rebate = rs.getDouble("OTRebate");
+                this.seasonEndDate = rs.getString("OTSeasonEndDate");
+                this.seasonStartDate = rs.getString("OTSeasonStartDate");
+                rs.close();
+                ps.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(Ticket.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        
+    }
 
 	public String getSeasonStartDate() {
 		return seasonStartDate;
@@ -62,7 +69,7 @@ public class OffseasonTicket extends Ticket {
 		return seasonEndDate;
 	}
 
-	public String getRebate() {
+	public double getRebate() {
 		return rebate;
 	}
 
