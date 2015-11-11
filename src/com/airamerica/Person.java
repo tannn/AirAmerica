@@ -1,44 +1,55 @@
 package com.airamerica;
+
 /*
 /* A partial implementation representing a 
  * Person */
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import org.apache.log4j.Logger;
+
+import com.airamerica.interfaces.InvoiceData;
+import com.airamerica.utils.DatabaseInfo;
+
 public class Person {
 	
-    private String personCode;
-    private Address address;
-    private ArrayList<String> emails;
-    private String firstName;
-    private String lastName;
-    private String phoneNumber;
-    private int age;
-    private String nationality;
-    private String identityNumber;
+	public static Logger log = Logger.getLogger(InvoiceData.class);
 
-    public Person(String personCode, Address address, String firstName, String lastName,
-            String phoneNumber, int age, String nationality, String identityNumber) {
-        this.personCode = personCode;
-        this.address = address;
-        this.emails = new ArrayList<String>();
-        this.firstName = firstName.replaceAll("\\s","");
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.age = age;
-        this.nationality = nationality;
-        this.identityNumber = identityNumber;
-    }
-    
-    public Person(String personCode, String identityNumber, int age, String nationality) {
-        this.personCode = personCode;
-        this.identityNumber = identityNumber;
-        this.age = age;
-        this.nationality = nationality;
-        Scanner personFile = null;
+	private String personCode;
+	private Address address;
+	private ArrayList<String> emails;
+	private String firstName;
+	private String lastName;
+	private String phoneNumber;
+	private int age;
+	private String nationality;
+	private String identityNumber;
+
+	public Person(String personCode, Address address, String firstName, String lastName, String phoneNumber, int age,
+			String nationality, String identityNumber) {
+		this.personCode = personCode;
+		this.address = address;
+		this.emails = new ArrayList<String>();
+		this.firstName = firstName.replaceAll("\\s", "");
+		this.lastName = lastName;
+		this.phoneNumber = phoneNumber;
+		this.age = age;
+		this.nationality = nationality;
+		this.identityNumber = identityNumber;
+	}
+
+	public Person(String personCode, String identityNumber, int age, String nationality) {
+		this.personCode = personCode;
+		this.identityNumber = identityNumber;
+		this.age = age;
+		this.nationality = nationality;
+		Scanner personFile = null;
 		try {
 			personFile = new Scanner(new FileReader("data/Persons.dat"));
 		} catch (FileNotFoundException e) {
@@ -48,68 +59,68 @@ public class Person {
 			String line = personFile.nextLine();
 			String[] personData = line.split(";");
 			if (personData[0].equals(personCode)) {
-                            String[] name = personData[1].split(",");
-                            this.lastName = name[0];
-                            this.firstName = name[1];
-                            String[] add = personData[2].split(",");
-                            this.address = new Address(add[0], add[1], add[2], add[3], add[4]);
-                            this.phoneNumber = personData[3];
-                            if(personData.length>5)
-                            this.emails.addAll(Arrays.asList(personData[4].split(",")));
-                        }
+				String[] name = personData[1].split(",");
+				this.lastName = name[0];
+				this.firstName = name[1];
+				String[] add = personData[2].split(",");
+				this.address = new Address(add[0], add[1], add[2], add[3], add[4]);
+				this.phoneNumber = personData[3];
+				if (personData.length > 5)
+					this.emails.addAll(Arrays.asList(personData[4].split(",")));
+			}
 		}
 	}
-    
-    public Person(String personCode, Address address) {
-        this.personCode = personCode;
-        this.address = address;
-        this.emails = new ArrayList<String>(); 
-    }
 
-    public Address getAddress() {
-        return this.address;
-    }
+	public Person(String personCode, Address address) {
+		this.personCode = personCode;
+		this.address = address;
+		this.emails = new ArrayList<String>();
+	}
 
-    public String getPersonCode() {
-        return personCode;
-    }
+	public Address getAddress() {
+		return this.address;
+	}
 
-    public void setEmails(ArrayList<String> emails) {
-        this.emails = emails;
-    }
+	public String getPersonCode() {
+		return personCode;
+	}
 
-    public void addEmail(String email) {
-        this.emails.add(email);
-    }
+	public void setEmails(ArrayList<String> emails) {
+		this.emails = emails;
+	}
 
-    public String getFirstName() {
-        return firstName;
-    }
+	public void addEmail(String email) {
+		this.emails.add(email);
+	}
 
-    public String getLastName() {
-        return lastName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public int getAge() {
-        return age;
-    }
+	public String getLastName() {
+		return lastName;
+	}
 
-    public String getIdentityNumber() {
-        return identityNumber;
-    }
+	public int getAge() {
+		return age;
+	}
 
-    public String getNationality() {
-        return nationality;
-    }
+	public String getIdentityNumber() {
+		return identityNumber;
+	}
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-    
-    
-    /**
+	public String getNationality() {
+		return nationality;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	/**
 	 * 
-	 * @param code Code of person
+	 * @param code
+	 *            Code of person
 	 * @return Person's name (Last, First)
 	 */
 	public static String getPersonName(String code) {
@@ -128,11 +139,12 @@ public class Person {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * 
-	 * @param code Code of person
-	 * @return	Name (Last, First), Address, and other location identifiers
+	 * @param code
+	 *            Code of person
+	 * @return Name (Last, First), Address, and other location identifiers
 	 */
 	public static String getContactInfo(String personCode) {
 		Scanner personFile = null;
@@ -146,39 +158,39 @@ public class Person {
 			String[] personData = line.split(";");
 			if (personData[0].equals(personCode)) {
 				String[] extraData = personData[2].split(",");
-				return personData[1] + "\n\t" + extraData[0] + "\n\t" + extraData[1] + " "+ extraData[2] + " " + extraData[3] + " " + extraData[4];
+				return personData[1] + "\n\t" + extraData[0] + "\n\t" + extraData[1] + " " + extraData[2] + " "
+						+ extraData[3] + " " + extraData[4];
 			}
 		}
+		
+		
+		
+		
+		
+		
 		return null;
 	}
-	
-	        public String getSeat(){
-            String seat = "";
-            Scanner invoiceFile = null;
-            try {
-            invoiceFile = new Scanner(new FileReader("data/Invoices.dat"));
-        } catch (FileNotFoundException e) {
-            System.out.println("data/Invoices.dat not found.");
-        }
-        while (invoiceFile.hasNextLine()) {
-            String line = invoiceFile.nextLine();
-            if (!(line.length() <= 5 && line.length() > 0)) {
-                for(String s : line.split(";")[4].split(",")){
-                    String[] p = s.split(":");
-                    if(Product.getProductType(p[0]).substring(0).equals("TS")||
-                            Product.getProductType(p[0]).substring(0).equals("TO")||
-                            Product.getProductType(p[0]).substring(0).equals("TA")){
-                        for(int i = 4; i < p.length; i += 5){
-                            if(p[i].equals(this.personCode)){
-                                seat = p[i-1];
-                            }
-                        }
-                    }
-                }
-            }
-        }
-            return seat;
-        }
-    
-	
+
+	public String getSeat() {
+		String seat = "";
+		
+		//What happens if the person has more than one seat? (Such as more than one ticket?)
+		
+		try {
+			PreparedStatement ps = DatabaseInfo.getConnection()
+					.prepareStatement("SELECT SeatNumber FROM Passenger WHERE Person_ID = ?");
+			ps.setString(1, this.personCode);
+			ResultSet rs = ps.executeQuery();
+			ps.close();
+			seat = rs.getString("SeatNumber");
+
+		} catch (SQLException e1) {
+			log.error("Failed to retrieve seat number under code " + this.personCode, e1);
+		}
+		
+		
+		
+		return seat;
+	}
+
 }
