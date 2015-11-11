@@ -142,7 +142,7 @@ public class Person {
 
 		try {
 			PreparedStatement ps = DatabaseInfo.getConnection()
-					.prepareStatement("SELECT * FROM Person WHERE PersonCode = ?");
+					.prepareStatement("SELECT LastName, FirstName FROM Person WHERE PersonCode = ?");
 			ps.setString(1, code);
 			ResultSet rs = ps.executeQuery();
 
@@ -168,7 +168,7 @@ public class Person {
 
 		try {
 			PreparedStatement ps = DatabaseInfo.getConnection()
-					.prepareStatement("SELECT * FROM Person WHERE PersonCode = ?");
+					.prepareStatement("SELECT Address_ID, LastName, FirstName FROM Person WHERE PersonCode = ?");
 			ps.setString(1, personCode);
 			ResultSet rs = ps.executeQuery();
 
