@@ -1,20 +1,24 @@
 package com.airamerica;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.Scanner;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import com.airamerica.utils.DatabaseInfo;
 
 /**
  *
  * @author EPiquette
  */
-public class SpecialAssistance extends Services{
+public class SpecialAssistance extends Service{
     
     private String typeOfService;
+    private String productCode;
 
 	public SpecialAssistance(String productCode, String typeOfService) {
 		super(productCode, "SS");
 		this.typeOfService = typeOfService;
+		this.productCode = productCode;
 	}
 
 	public String getTypeOfService() {
@@ -32,20 +36,21 @@ public class SpecialAssistance extends Services{
 	}
 	
 	public String getReason() {
-		Scanner productFile = null;
+		String data = "";
+		
 		try {
-			productFile = new Scanner(new FileReader("data/Products.dat"));
-		} catch (FileNotFoundException e) {
-			System.out.println("Products.dat not found.");
+			PreparedStatement ps = DatabaseInfo.getConnection()
+					.prepareStatement("SELECT SATypeOfService FROM Product WHERE ProductCode = ?");
+			ps.setString(1, productCode);
+			ResultSet rs = ps.executeQuery();
+			ps.close();
+			return rs.getString("ProductType");
+
+		} catch (SQLException e1) {
+			log.error("Failed to retrieve special assistance reason under", e1);
 		}
-		while (productFile.hasNextLine()) {
-			String line = productFile.nextLine();
-			String[] productData = line.split(";");
-			if (getProductCode().equals(productData[0]) && "SS".equals(productData[1])) {
-				return productData[2];
-			}
-		}
-		return null;
+		
+		return data;
 	}
     
 }
