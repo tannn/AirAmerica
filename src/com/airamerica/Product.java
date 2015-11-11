@@ -1,11 +1,18 @@
 package com.airamerica;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.Scanner;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.apache.log4j.Logger;
+
+import com.airamerica.interfaces.InvoiceData;
+import com.airamerica.utils.DatabaseInfo;
 
 abstract public class Product {
-	//calculate price, polymorphism
+
+	public static Logger log = Logger.getLogger(InvoiceData.class);
+
 	private String productCode;
 	private String productType;
 
@@ -23,24 +30,28 @@ abstract public class Product {
 	}
 
 	/**
-	 * @param code Code of product
-	 * @return	Type of product
+	 * @param code
+	 *            Code of product
+	 * @return Type of product
 	 */
 	public static String getProductType(String code) {
-		Scanner productFile = null;
+
 		try {
-			productFile = new Scanner(new FileReader("data/Products.dat"));
-		} catch (FileNotFoundException e) {
-			System.out.println("Products.dat not found.");
+			PreparedStatement ps = DatabaseInfo.getConnection()
+					.prepareStatement("SELECT ProductType FROM Product WHERE ProductCode = ?");
+			ps.setString(1, code);
+			ResultSet rs = ps.executeQuery();
+			ps.close();
+			return rs.getString("ProductType");
+
+		} catch (SQLException e1) {
+			log.error("Failed to retrieve airport under code " + code, e1);
 		}
-		while (productFile.hasNextLine()) {
-			String line = productFile.nextLine();
-			String[] productData = line.split(";");
-			if (productData[0].equals(code)) {
-				return productData[1];
-			}
-		}
+
 		return null;
 	}
 
+	public abstract double calculatePrice();
+
+	public abstract double calculateTax();
 }
