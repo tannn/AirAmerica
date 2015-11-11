@@ -1,15 +1,10 @@
 package com.airamerica;
 
-import com.airamerica.utils.DatabaseInfo;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import com.airamerica.utils.DatabaseInfo;
 
 /**
  *
@@ -31,23 +26,23 @@ public class Refreshment extends Service {
 	public Refreshment(String productCode, int quantity) {
 		super(productCode, "SR");
 		this.quantity = quantity;
-                
-                Connection conn = DatabaseInfo.getConnection();
-                PreparedStatement ps;
-                ResultSet rs;
-                String getRefreshment = "select ProductPrintName, Cost from Product where ProductCode = ?";
-            try {                
-                ps = conn.prepareStatement(getRefreshment);
-                ps.setString(1, this.getProductCode());
-                rs = ps.executeQuery();
-                rs.next();
-                this.name = rs.getString("ProductPrintName");
-                this.cost = rs.getDouble("Cost");
-                rs.close();
-                ps.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(Ticket.class.getName()).log(Level.SEVERE, null, ex);
-            }
+
+		try {
+			PreparedStatement ps = DatabaseInfo.getConnection()
+					.prepareStatement("SELECT ProductPrintName, Cost FROM Product WHERE ProductCode = ?");
+			ps.setString(1, productCode);
+			ResultSet rs = ps.executeQuery();
+			
+            this.name = rs.getString("ProductPrintName");
+            this.cost = rs.getDouble("Cost");
+			
+			ps.close();
+			
+
+		} catch (SQLException e1) {
+			log.error("Failed to retrieve product under code " + productCode, e1);
+		}
+		
 	}
 
 	public String getName() {
