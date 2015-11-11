@@ -1,7 +1,6 @@
 package com.airamerica;
 
 import com.airamerica.utils.DatabaseInfo;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,39 +26,32 @@ public class Invoice {
         this.customerCode = customerCode;
         this.salespersonCode = salespersonCode;
         this.invoiceDate = invoiceDate;
-        products = new ArrayList<>();
-        ArrayList<Person> ticketHolders = new ArrayList<>();
+        products = new ArrayList<Product>();
+        ArrayList<Person> ticketHolders = new ArrayList<Person>();
 
         for (Integer i : productInfo) {
-            Connection conn = DatabaseInfo.getConnection();
-            PreparedStatement ps1;
-            PreparedStatement ps2;
-            ResultSet rs1;
-            ResultSet rs2;
-            String getProductInfo = "select * from Product join InvoiceProduct join Passenger"
-                    + "on Product.Product_ID = InvoiceProduct.Product_ID and "
-                    + "InvoiceProduct.Passenger_ID = Passenger.Passenger_ID"
-                    + "where Product_ID = ?";
 
-            String getPersonInfo = "select PersonCode, Age, Nationality from "
-                    + "Passenger join Person on Passenger.Person_ID = "
-                    + "Person.Person_ID where Product_ID = ?";
             String productType = null;
             try {
-                ps1 = conn.prepareStatement(getProductInfo);
+                PreparedStatement ps1 = DatabaseInfo.getConnection().prepareStatement("select * from Product join InvoiceProduct join Passenger"
+                        + "on Product.Product_ID = InvoiceProduct.Product_ID and "
+                        + "InvoiceProduct.Passenger_ID = Passenger.Passenger_ID"
+                        + "where Product_ID = ?");
                 ps1.setInt(1, i);
-                rs1 = ps1.executeQuery();
+                ResultSet rs1 = ps1.executeQuery();
                 rs1.next();
                 productType = rs1.getString("ProductType");
 
-                ps2 = conn.prepareStatement(getPersonInfo);
+                PreparedStatement ps2 = DatabaseInfo.getConnection().prepareStatement("select PersonCode, Age, Nationality from "
+                        + "Passenger join Person on Passenger.Person_ID = "
+                        + "Person.Person_ID where Product_ID = ?");
                 ps2.setInt(1, i);
-                rs2 = ps2.executeQuery();
+                ResultSet rs2 = ps2.executeQuery();
                 rs2.next();
 
                 if (productType.equals("TS")) {
                     while (!rs2.isLast()) {
-                        ticketHolders.add(new Person(rs2.getString("PersonCode"),
+                        ticketHolders.add(new Person(rs2.getString("PersonCode"), rs2.getString("IdentityNumber"), 
                                 rs2.getInt("Age"), rs2.getString("Nationality")));
                         rs2.next();
                     }
@@ -68,7 +60,7 @@ public class Invoice {
                             ticketHolders, rs1.getString("TicketNote")));
                 } else if (productType.equals("TA")) {
                     while (!rs2.isLast()) {
-                        ticketHolders.add(new Person(rs2.getString("PersonCode"),
+                        ticketHolders.add(new Person(rs2.getString("PersonCode"), rs2.getString("IdentityNumber"), 
                                 rs2.getInt("Age"), rs2.getString("Nationality")));
                         rs2.next();
                     }
@@ -77,7 +69,7 @@ public class Invoice {
                             ticketHolders, rs1.getString("TicketNote")));
                 } else if (productType.equals("TO")) {
                     while (!rs2.isLast()) {
-                        ticketHolders.add(new Person(rs2.getString("PersonCode"),
+                        ticketHolders.add(new Person(rs2.getString("PersonCode"), rs2.getString("IdentityNumber"), 
                                 rs2.getInt("Age"), rs2.getString("Nationality")));
                         rs2.next();
                     }
@@ -101,7 +93,7 @@ public class Invoice {
             } catch (SQLException ex) {
                 Logger.getLogger(Ticket.class.getName()).log(Level.SEVERE, null, ex);
             }
-            ticketHolders = new ArrayList<>();
+            ticketHolders = new ArrayList<Person>();
         }
 
     }
