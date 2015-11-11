@@ -133,7 +133,8 @@ CREATE TABLE Passenger (
     Person_ID int  NOT NULL,
     Nationality varchar(15)  NOT NULL,
     Age int  NOT NULL,
-    SeatNumber varchar(4) NOT NULL
+    SeatNumber varchar(4) NOT NULL,
+    IdentityNumber varchar(10) NOT NULL
     -- Foreign Keys
 );
 
