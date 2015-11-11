@@ -1,16 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.airamerica;
 
-import com.airamerica.utils.DatabaseInfo;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import com.airamerica.utils.DatabaseInfo;
 
 /**
  *
@@ -30,35 +24,29 @@ public class Insurance extends Service {
 		this.name = name;
 		this.ageClass = ageClass;
 		this.costPerMile = costPerMile;
-		this.quantity = quantity;
+		this.setQuantity(quantity);
 		this.ticketCode = ticketCode;
 	}
 
 	public Insurance(String productCode, int quantity, String ticketCode) {
 		super(productCode, "SI");
-		this.quantity = quantity;
+		this.setQuantity(quantity);
 		this.ticketCode = ticketCode;
-                
-                
-                Connection conn = DatabaseInfo.getConnection();
-                PreparedStatement ps;
-                ResultSet rs;
-                String getInsurance = "select ProductPrintName, InsuranceAgeClass, "
-                        + "InsuranceCostPerMile from Product where ProductCode = ?";
-            try {                
-                ps = conn.prepareStatement(getInsurance);
-                ps.setString(1, this.getProductCode());
-                rs = ps.executeQuery();
-                rs.next();
-                this.name = rs.getString("ProductPrintName");
-                this.ageClass = rs.getString("InsuranceAgeClass");
-                this.costPerMile = rs.getDouble("InsuranceCostPerMile");
-                rs.close();
-                ps.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(Ticket.class.getName()).log(Level.SEVERE, null, ex);
-            }
-                
+
+		try {
+			PreparedStatement ps = DatabaseInfo.getConnection()
+					.prepareStatement("select ProductPrintName, InsuranceAgeClass, "
+							+ "InsuranceCostPerMile from Product where ProductCode = ?");
+			ps.setString(1, this.getProductCode());
+			ResultSet rs = ps.executeQuery();
+			this.name = rs.getString("ProductPrintName");
+			this.ageClass = rs.getString("InsuranceAgeClass");
+			this.costPerMile = rs.getDouble("InsuranceCostPerMile");
+			ps.close();
+
+		} catch (SQLException e1) {
+			log.error("Failed to retrieve insurance under code " + productCode, e1);
+		}
 	}
 
 	public String getName() {
@@ -72,21 +60,27 @@ public class Insurance extends Service {
 	public double getCostPerMile() {
 		return costPerMile;
 	}
-	
 
-        @Override
-    public double calculatePrice() {
-        return costPerMile*getMiles();
-    }
+	@Override
+	public double calculatePrice() {
+		return costPerMile * getMiles();
+	}
 
+	@Override
+	public double calculateTax() {
+		return calculatePrice() * 0.04;
+	}
 
-        @Override
-    public double calculateTax() {
-        return calculatePrice()*0.04;
-    }
-	
-	    public double getMiles(){
-        return Ticket.getTicket(ticketCode).getDistance();
-    }
+	public double getMiles() {
+		return Ticket.getTicket(ticketCode).getDistance();
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
 
 }
