@@ -249,7 +249,7 @@ public class Ticket extends Product {
 
             if (productType.equals("TS")) {
                 while (!rs2.isLast()) {
-                    passengers.add(new Person(rs2.getString("PersonCode"),
+                    passengers.add(new Person(rs2.getString("PersonCode"), rs2.getString("IdentityNumber"),
                             rs2.getInt("Age"), rs2.getString("Nationality")));
                     rs2.next();
                 }
@@ -258,7 +258,7 @@ public class Ticket extends Product {
                         passengers, rs1.getString("TicketNote"));
             } else if (productType.equals("TA")) {
                 while (!rs2.isLast()) {
-                    passengers.add(new Person(rs2.getString("PersonCode"),
+                    passengers.add(new Person(rs2.getString("PersonCode"), rs2.getString("IdentityNumber"),
                             rs2.getInt("Age"), rs2.getString("Nationality")));
                     rs2.next();
                 }
@@ -267,7 +267,7 @@ public class Ticket extends Product {
                         passengers, rs1.getString("TicketNote"));
             } else if (productType.equals("TO")) {
                 while (!rs2.isLast()) {
-                    passengers.add(new Person(rs2.getString("PersonCode"),
+                    passengers.add(new Person(rs2.getString("PersonCode"), rs2.getString("IdentityNumber"),
                             rs2.getInt("Age"), rs2.getString("Nationality")));
                     rs2.next();
                 }
