@@ -17,9 +17,10 @@ package com.airamerica.interfaces;
 
 /**
  * TODO:
- * - Test all methods (including: set up database on CSE)
+ * - Test all methods
  * - Figure out what 'identity' is for addPassengerToInvoice()
  * - Change report generation to read database instead of data files
+ * - Add log4j for bonus points
  */
 
 import java.sql.*;
