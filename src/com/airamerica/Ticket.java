@@ -4,12 +4,19 @@
  */
 package com.airamerica;
 
+import com.airamerica.utils.DatabaseInfo;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import com.airamerica.utils.Haversine;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -53,33 +60,40 @@ public class Ticket extends Product {
 		this.seat = seat;
 		this.ticketHolder = ticketHolders;
 		this.ticketNote = ticketNote;
-		Scanner productFile = null;
-		try {
-			productFile = new Scanner(new FileReader("data/Products.dat"));
-		} catch (FileNotFoundException e) {
-			System.out.println("Products.dat not found.");
-		}
-		while (productFile.hasNextLine()) {
-			String line = productFile.nextLine();
-			String[] productData = line.split(";");
-			if (productCode.equals(productData[0]) && productType.equals(productData[1]) && productData[2].length() < 5) {
-				this.depAirportCode = productData[2];
-				this.arrAirportCode = productData[3];
-				this.depTime = productData[4];
-				this.arrTime = productData[5];
-				this.flightNo = productData[6];
-				this.flightClass = productData[7];
-				this.aircraftType = productData[8];
-			} else if (productCode.equals(productData[0]) && productType.equals(productData[1]) && productData[2].length() > 5){
-				this.depAirportCode = productData[4];
-				this.arrAirportCode = productData[5];
-				this.depTime = productData[6];
-				this.arrTime = productData[7];
-				this.flightNo = productData[8];
-				this.flightClass = productData[9];
-				this.aircraftType = productData[10];
-			}
-		}
+                
+                Connection conn = DatabaseInfo.getConnection();
+                PreparedStatement ps;
+                ResultSet rs;
+                String getTicket = "select ArrAirport_ID, DepAirport_ID, "
+                        + "ArrivalTime, DepartureTime, FlightNumber, FlightClass,"
+                        + " PlaneName from Product where ProductCode = ?";
+            try {                
+                ps = conn.prepareStatement(getTicket);
+                ps.setString(1, this.getProductCode());
+                rs = ps.executeQuery();
+                rs.next();
+                int arrAirport_ID = rs.getInt("ArrAirport_ID");
+                int depAirport_ID = rs.getInt("DepAirport_ID");
+                this.depTime = rs.getString("DepartureTime");
+                this.arrTime = rs.getString("ArrivalTime");
+                this.flightNo = rs.getString("FlightNumber");
+                this.flightClass = rs.getString("FlightClass");
+                this.aircraftType = rs.getString("PlaneName");
+                String getAirport = "select AirportCode from Airport where Airport_ID = ?";
+                ps = conn.prepareStatement(getAirport);
+                ps.setInt(1, arrAirport_ID);
+                rs = ps.executeQuery();
+                rs.next();
+                this.arrAirportCode = rs.getString("AirportCode");
+                ps.setInt(1, depAirport_ID);
+                rs = ps.executeQuery();
+                rs.next();
+                this.depAirportCode = rs.getString("AirportCode");
+                rs.close();
+                ps.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(Ticket.class.getName()).log(Level.SEVERE, null, ex);
+            }
 	}
 
 	public String getDepAirportCode() {
@@ -127,39 +141,47 @@ public class Ticket extends Product {
 	}
 	
 	public String getArrCity() {
-		Scanner airportFile = null;
-		try {
-			airportFile = new Scanner(new FileReader("data/Airports.dat"));
-		} catch (FileNotFoundException e) {
-			System.out.println("Airports.dat not found.");
-		}
-		while (airportFile.hasNextLine()) {
-			String line = airportFile.nextLine();
-			String[] airportData = line.split(";");
-			if (airportData[0].equals(getArrAirportCode())) {
-				String[] addressData = airportData[2].split(",");
-				return addressData[1] + "," + addressData[2];
-			}
-		}
-		return null;
+		String arrCity = null;
+                
+                Connection conn = DatabaseInfo.getConnection();
+                PreparedStatement ps;
+                ResultSet rs;
+                String getCity = "select City from Address join Airport on "
+                        + "Airport.Address_ID = Address.Address_ID where AirportCode = ?";
+                 try {                
+                ps = conn.prepareStatement(getCity);
+                ps.setString(1, this.arrAirportCode);
+                rs = ps.executeQuery();
+                rs.next();
+                arrCity = rs.getString("City");
+                rs.close();
+                ps.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(Ticket.class.getName()).log(Level.SEVERE, null, ex);
+            }
+               return arrCity;
 	}
 	
 	public String getDepCity() {
-		Scanner airportFile = null;
-		try {
-			airportFile = new Scanner(new FileReader("data/Airports.dat"));
-		} catch (FileNotFoundException e) {
-			System.out.println("Airports.dat not found.");
-		}
-		while (airportFile.hasNextLine()) {
-			String line = airportFile.nextLine();
-			String[] airportData = line.split(";");
-			if (airportData[0].equals(getDepAirportCode())) {
-				String[] addressData = airportData[2].split(",");
-				return addressData[1] + "," + addressData[2];
-			}
-		}
-		return null;
+		String depCity = null;
+                
+                Connection conn = DatabaseInfo.getConnection();
+                PreparedStatement ps;
+                ResultSet rs;
+                String getCity = "select City from Address join Airport on "
+                        + "Airport.Address_ID = Address.Address_ID where AirportCode = ?";
+                 try {                
+                ps = conn.prepareStatement(getCity);
+                ps.setString(1, this.depAirportCode);
+                rs = ps.executeQuery();
+                rs.next();
+                depCity = rs.getString("City");
+                rs.close();
+                ps.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(Ticket.class.getName()).log(Level.SEVERE, null, ex);
+            }
+               return depCity;
 	}
 	
 	public double getDistance() {
@@ -170,7 +192,7 @@ public class Ticket extends Product {
                 arr.getAirportLatMin(), arr.getAiportLongDeg(), arr.getAirportLongMin());
 	}
 	
-	@Override
+        @Override
 	public double calculatePrice() {
         Airport arr = Airport.getAirport(arrAirportCode);
         Airport dep = Airport.getAirport(depAirportCode);
@@ -185,7 +207,7 @@ public class Ticket extends Product {
 			return dist * .2;
 	}
 
-	@Override
+        @Override
 	public double calculateTax() {
         double baseTax = calculatePrice() * .075;
         int segmentTax = ticketHolder.size() * 4;
@@ -194,7 +216,7 @@ public class Ticket extends Product {
 	}
 	
 	 public static Ticket getTicket(String ticketCode) {
-        ArrayList<Person> passengers = new ArrayList<Person>();
+        ArrayList<Person> passengers = new ArrayList<>();
         Scanner invoiceFile = null;
         try {
             invoiceFile = new Scanner(new FileReader("data/Invoices.dat"));
