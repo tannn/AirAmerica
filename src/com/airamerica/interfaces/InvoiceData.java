@@ -18,13 +18,12 @@ package com.airamerica.interfaces;
 /**
  * TODO:
  * - Test all methods
- * - Figure out what 'identity' is for addPassengerToInvoice()
  * - Change report generation to read database instead of data files
- * - Add log4j for bonus points
  */
 
 import java.sql.*;
 import com.airamerica.utils.DatabaseInfo;
+import org.apache.log4j.Logger;
 
 /**
  * This is a collection of utility methods that define a general API for
@@ -33,6 +32,8 @@ import com.airamerica.utils.DatabaseInfo;
  */
 public class InvoiceData {
 
+	public static Logger log = Logger.getLogger(InvoiceData.class);
+	
 	/**
 	 * Method that removes every person record from the database
 	 */
@@ -44,7 +45,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to delete Person table",e1);
 		}
 
 	}
@@ -90,7 +91,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to add new person to Person",e1);
 		}
 	}
 
@@ -104,7 +105,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to delete Airport table",e1);
 		}
 	}
 
@@ -155,7 +156,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to add new Airport to Airport",e1);
 		}
 	}
 
@@ -185,7 +186,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to add new email to Email",e1);
 		}
 	}
 
@@ -200,7 +201,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to delete Customer table",e1);
 		}
 
 	}
@@ -222,7 +223,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to add new customer to Customer",e1);
 		}
 	}
 
@@ -236,7 +237,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to delete Product table",e1);
 		}
 
 	}
@@ -261,7 +262,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to add new standardTicket to Product",e1);
 		}
 	}
 
@@ -289,7 +290,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to add new offseasonTicket to Product",e1);
 		}
 	}
 
@@ -314,7 +315,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to add new awardsTicket to Product",e1);
 		}
 	}
 
@@ -323,8 +324,8 @@ public class InvoiceData {
 	 */
 	public static void addCheckedBaggage(String productCode, String ticketCode) {
 		try {
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
-					"INSERT INTO Product (ProductType, ProductCode, TicketCode) VALUES ('SC',?,?)");
+			PreparedStatement ps = DatabaseInfo.getConnection()
+					.prepareStatement("INSERT INTO Product (ProductType, ProductCode, TicketCode) VALUES ('SC',?,?)");
 			ps.setString(2, productCode);
 			ps.setString(3, ticketCode);
 
@@ -332,7 +333,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to add new checkedBaggage to Product",e1);
 		}
 	}
 
@@ -351,7 +352,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to add new insurance to Product",e1);
 		}
 	}
 
@@ -387,7 +388,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to add new refreshment to Product",e1);
 		}
 	}
 
@@ -403,7 +404,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to delete Invoice and InvoiceProducts tables",e1);
 		}
 	}
 
@@ -423,7 +424,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to add new invoice to Invoice",e1);
 		}
 	}
 
@@ -446,7 +447,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to add new ticket to invoice in InvoiceProduct",e1);
 		}
 	}
 
@@ -455,33 +456,34 @@ public class InvoiceData {
 	 * <code>invoiceCode</code>
 	 */
 	public static void addPassengerInformation(String invoiceCode, String productCode, String personCode,
-			String identity, int age, String nationality, String seat) { // Identity?
+			String identity, int age, String nationality, String seat) {
 		try {
 
 			int passengerID;
 
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
-					"INSERT INTO Passenger (Product_ID, Person_ID, Age, Nationality, SeatNumber) VALUES ((SELECT Product_ID FROM Product WHERE ProductCode = ?),(SELECT Person_ID FROM Person WHERE PersonCode = ?),?,?,?)");
+					"INSERT INTO Passenger (Product_ID, Person_ID, Age, Nationality, SeatNumber, IdentityNumber) VALUES ((SELECT Product_ID FROM Product WHERE ProductCode = ?),(SELECT Person_ID FROM Person WHERE PersonCode = ?),?,?,?,?)");
 			ps.setString(1, productCode);
 			ps.setString(2, personCode);
 			ps.setInt(3, age);
 			ps.setString(4, nationality);
 			ps.setString(5, seat);
+			ps.setString(6, identity);
 			ps.executeUpdate();
 			ps = DatabaseInfo.getConnection().prepareStatement("SELECT LAST_INSERT_ID()");
 			ResultSet rs = ps.executeQuery();
 			rs.next();
 			passengerID = rs.getInt("LAST_INSERT_ID()");
 
-			ps = DatabaseInfo.getConnection()
-					.prepareStatement("UPDATE InvoiceProduct SET Passenger_ID = ? WHERE Invoice_ID = (SELECT Invoice_ID FROM Invoice WHERE InvoiceCode = ?)");
+			ps = DatabaseInfo.getConnection().prepareStatement(
+					"UPDATE InvoiceProduct SET Passenger_ID = ? WHERE Invoice_ID = (SELECT Invoice_ID FROM Invoice WHERE InvoiceCode = ?)");
 			ps.setInt(1, passengerID);
 			ps.setString(2, invoiceCode);
 			ps.executeUpdate();
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to add new passenger to Passenger",e1);
 		}
 	}
 
@@ -503,7 +505,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to add new insurance to invoice in InvoiceProduct",e1);
 		}
 	}
 
@@ -524,7 +526,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to add new checked baggage to invoice in InvoiceProduct",e1);
 		}
 	}
 
@@ -545,7 +547,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to add special asisstance to invoice in InvoiceProduct",e1);
 		}
 	}
 
@@ -566,7 +568,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Failed to add new refreshment to invoice in InvoiceProduct",e1);
 		}
 	}
 }
