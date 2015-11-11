@@ -1,10 +1,16 @@
 package com.airamerica;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.Scanner;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import com.airamerica.interfaces.InvoiceData;
+import com.airamerica.utils.DatabaseInfo;
+import org.apache.log4j.Logger;
 
 public class Airport {
+
+	public static Logger log = Logger.getLogger(InvoiceData.class);
 
 	private String airportCode;
 	private String airportName;
@@ -27,29 +33,50 @@ public class Airport {
 		this.passengerFacilityFee = passengerFacilityFee;
 	}
 
-	public static Airport getAirport(String airportCode) {
-		Scanner airportFile = null;
-		try {
-			airportFile = new Scanner(new FileReader("data/Airports.dat"));
-		} catch (FileNotFoundException e) {
-			System.out.println("Airports.dat not found.");
-		}
-		while (airportFile.hasNextLine()) {
-			String line = airportFile.nextLine();
-			String[] airportData = line.split(";");
-			System.out.println("DEBUG: " + airportData[0]);
-			if (airportCode.equals(airportData[0])) {
-				String[] address = airportData[2].split(",");
-				String[] location = airportData[3].split(",");
+	public Airport(String airportCode, String airportName, int airportLatDeg, int airportLatMin, int airportLongDeg,
+			int airportLongMin, float passengerFacilityFee) {
+		this.airportCode = airportCode;
+		this.airportName = airportName;
+		this.airportLatDeg = airportLatDeg;
+		this.airportLatMin = airportLatMin;
+		this.airportLongDeg = airportLongDeg;
+		this.airportLongMin = airportLongMin;
+		this.passengerFacilityFee = passengerFacilityFee;
+	}
 
-				return new Airport(airportData[0], airportData[1],
-						new Address(address[0], address[1], address[2], address[3], address[4]),
-						Integer.parseInt(location[0]), Integer.parseInt(location[1]),
-						Integer.parseInt(location[2]), Integer.parseInt(location[3]),
-						Float.parseFloat(airportData[4]));
+	public static Airport getAirport(String airportCode) {
+		Airport a = null;
+
+		try {
+			PreparedStatement ps = DatabaseInfo.getConnection()
+					.prepareStatement("SELECT * FROM Airport WHERE AirpotCode = ?");
+			ps.setString(1, airportCode);
+			ResultSet rs = ps.executeQuery();
+
+			int addressID = rs.getInt("Address_ID");
+
+			if (rs.getString("Address_ID") == null) {
+				a = new Airport(rs.getString("AirportCode"), rs.getString("AirportName"), rs.getInt("LatDeg"),
+						rs.getInt("LatMin"), rs.getInt("LongDeg"), rs.getInt("LongMin"), rs.getFloat("PassengerFee"));
+			} else {
+				ps = DatabaseInfo.getConnection().prepareStatement("SELECT * FROM Address WHERE Address_ID = ?");
+				ps.setInt(1, addressID);
+				ResultSet addressInfo = ps.executeQuery();
+
+				Address address = new Address(addressInfo.getString("Address"), addressInfo.getString("City"),
+						addressInfo.getString("StateProvince"), addressInfo.getString("ZIP"),
+						addressInfo.getString("Country"));
+
+				a = new Airport(rs.getString("AirportCode"), rs.getString("AirportName"), address, rs.getInt("LatDeg"),
+						rs.getInt("LatMin"), rs.getInt("LongDeg"), rs.getInt("LongMin"), rs.getFloat("PassengerFee"));
 			}
+			ps.close();
+		} catch (SQLException e1) {
+			log.error("Failed to retrieve airport under code " + airportCode, e1);
 		}
-		return null;
+
+		return a;
+
 	}
 
 	public String getAirportCode() {
