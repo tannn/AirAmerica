@@ -39,7 +39,16 @@ public class InvoiceData {
 			
 			conn = DatabaseInfo.getConnection();
 			
-			PreparedStatement ps  = conn.prepareStatement("DELETE FROM Person");
+			removeAllCustomers();
+			removeAllInvoices();
+			
+			PreparedStatement ps  = conn.prepareStatement("DELETE FROM Email");
+			ps.executeUpdate();
+			
+			ps  = conn.prepareStatement("DELETE FROM Passenger");
+			ps.executeUpdate();
+			
+			ps  = conn.prepareStatement("DELETE FROM Person");
 			ps.executeUpdate();
 
 			ps.close();
@@ -123,6 +132,9 @@ public class InvoiceData {
 		try {
 			
 			conn = DatabaseInfo.getConnection();
+			
+			removeAllProducts();
+			
 			PreparedStatement ps = conn.prepareStatement("DELETE FROM Airport");
 			ps.executeUpdate();
 
@@ -220,7 +232,6 @@ public class InvoiceData {
 			
 			conn = DatabaseInfo.getConnection();
 			
-			int emailID;
 			int personID;
 			
 			ps = conn.prepareStatement("SELECT Person_ID FROM Person WHERE PersonCode = ?");
@@ -237,13 +248,6 @@ public class InvoiceData {
 			ps = conn.prepareStatement("SELECT LAST_INSERT_ID()");
 			rs = ps.executeQuery();
 			rs.next();
-			emailID = rs.getInt("LAST_INSERT_ID()");
-
-			ps = conn.prepareStatement(
-					"UPDATE Person SET Email_ID = ? WHERE Person_ID = ?");
-			ps.setInt(1, emailID);
-			ps.setInt(2, personID);
-			ps.executeUpdate();
 
 			ps.close();
 			rs.close();
@@ -277,6 +281,9 @@ public class InvoiceData {
 		Connection conn = null;
 		try {
 			conn = DatabaseInfo.getConnection();
+			
+			removeAllInvoices();
+			
 			PreparedStatement ps = conn.prepareStatement("DELETE FROM Customer");
 			ps.executeUpdate();
 
@@ -319,7 +326,13 @@ public class InvoiceData {
 		Connection conn = null;
 		try {
 			conn = DatabaseInfo.getConnection();
-			PreparedStatement ps = conn.prepareStatement("DELETE FROM Product");
+			
+			removeAllInvoices();
+			
+			PreparedStatement ps  = conn.prepareStatement("DELETE FROM Passenger");
+			ps.executeUpdate();
+			
+			ps = conn.prepareStatement("DELETE FROM Product");
 			ps.executeUpdate();
 
 			ps.close();
@@ -504,7 +517,11 @@ public class InvoiceData {
 		Connection conn = null;
 		try {
 			conn = DatabaseInfo.getConnection();
-			PreparedStatement ps = conn.prepareStatement("DELETE FROM Invoice");
+			
+			PreparedStatement ps = conn.prepareStatement("DELETE FROM InvoiceProduct");
+			ps.executeUpdate();
+			
+			ps = conn.prepareStatement("DELETE FROM Invoice");
 			ps.executeUpdate();
 
 			ps.close();
@@ -626,16 +643,31 @@ public class InvoiceData {
 	 */
 	public static void addInsuranceToInvoice(String invoiceCode, String productCode, int quantity, String ticketCode) {
 		try {
+			
+			Connection conn = DatabaseInfo.getConnection();
+			
+			PreparedStatement ps = conn.prepareStatement("SELECT Product_ID FROM Product WHERE ProductCode = ?");
+			ps.setString(1, ticketCode);
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			int productID = rs.getInt("Product_ID");
 
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
-					"INSERT INTO InvoiceProduct (Invoice_ID, Product_ID, Quantity, TicketCode) VALUES ((SELECT Invoice_ID FROM Invoice WHERE InvoiceCode = ?),(SELECT Product_ID FROM Product WHERE ProductCode = ?),?,?)");
+			ps = conn.prepareStatement(
+					"INSERT INTO InvoiceProduct (Invoice_ID, Product_ID, Quantity) VALUES ((SELECT Invoice_ID FROM Invoice WHERE InvoiceCode = ?),?,?)");
 			ps.setString(1, invoiceCode);
-			ps.setString(2, productCode);
+			ps.setInt(2, productID);
 			ps.setInt(3, quantity);
-			ps.setString(4, ticketCode);
 			ps.executeUpdate();
+			
+//			ps = conn.prepareStatement(
+//					"UPDATE Product SET TicketCode = ? WHERE Product_ID = ?");
+//			ps.setString(1, ticketCode);
+//			ps.setInt(2, productID);
+//			ps.executeUpdate();
 
 			ps.close();
+			rs.close();
+			conn.close();
 		} catch (SQLException e1) {
 			log.error("Failed to add new insurance to invoice in InvoiceProduct", e1);
 		}
@@ -671,7 +703,7 @@ public class InvoiceData {
 		try {
 
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
-					"INSERT INTO InvoiceProduct (Invoice_ID, Product_ID, Passenger_ID) VALUES ((SELECT Invoice_ID FROM Invoice WHERE InvoiceCode = ?),(SELECT Product_ID FROM Product WHERE ProductCode = ?),(SELECT Person_ID FROM Person WHERE PersonCode = ?))");
+					"INSERT INTO InvoiceProduct (Invoice_ID, Product_ID, Person_ID) VALUES ((SELECT Invoice_ID FROM Invoice WHERE InvoiceCode = ?),(SELECT Product_ID FROM Product WHERE ProductCode = ?),(SELECT Person_ID FROM Person WHERE PersonCode = ?))");
 			ps.setString(1, invoiceCode);
 			ps.setString(2, productCode);
 			ps.setString(3, personCode);
@@ -679,7 +711,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add special asisstance to invoice in InvoiceProduct", e1);
+			log.error("Failed to add special assistance to invoice in InvoiceProduct", e1);
 		}
 	}
 
