@@ -39,14 +39,14 @@ public class Invoice {
 
 			String productType = null;
 			
-			PreparedStatement ps = null;
-			ResultSet rs = null;
+			PreparedStatement ps1 = null;
+			ResultSet rs1 = null;
 			try {
-				PreparedStatement ps1 = conn.prepareStatement(
+				ps1 = conn.prepareStatement(
 						"select * from Product join InvoiceProduct on Product.Product_ID = InvoiceProduct.Product_ID join Passenger "
 						+ "on InvoiceProduct.Passenger_ID = Passenger.Passenger_ID where Product.Product_ID = ?");
 				ps1.setInt(1, i);
-				ResultSet rs1 = ps1.executeQuery();
+				rs1 = ps1.executeQuery();
 				while (rs1.next()) {
 					productType = rs1.getString("ProductType");
 
@@ -103,12 +103,12 @@ public class Invoice {
 				log.error("Failed to create invoice ", ex);
 			} finally{
 				try {
-					ps.close();
+					ps1.close();
 				} catch (SQLException e1) {
 					log.error("Failed to close PrepareStatement connection", e1);
 				}
 				try {
-					rs.close();
+					rs1.close();
 				} catch (SQLException e) {
 					log.error("Failed to close ResultSet connection", e);
 				}
