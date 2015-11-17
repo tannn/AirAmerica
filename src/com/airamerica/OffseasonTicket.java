@@ -42,7 +42,7 @@ public class OffseasonTicket extends Ticket {
 			this.seasonEndDate = rs.getString("OTSeasonEndDate");
 			this.seasonStartDate = rs.getString("OTSeasonStartDate");
 			ps.close();
-
+			rs.close();
 		} catch (SQLException e1) {
 			log.error("Failed to retrieve offseason ticket details under code " + productCode, e1);
 		}
