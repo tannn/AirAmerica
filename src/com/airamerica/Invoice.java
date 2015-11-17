@@ -37,9 +37,10 @@ public class Invoice {
 
 		for (Integer i : productInfo) {
 
-			System.out.println("DEBUG: PRODUCT INFO: " + i);
-
 			String productType = null;
+			
+			PreparedStatement ps = null;
+			ResultSet rs = null;
 			try {
 				PreparedStatement ps1 = conn.prepareStatement(
 						"select * from Product join InvoiceProduct on Product.Product_ID = InvoiceProduct.Product_ID join Passenger "
@@ -100,6 +101,22 @@ public class Invoice {
 				conn.close();
 			} catch (SQLException ex) {
 				log.error("Failed to create invoice ", ex);
+			} finally{
+				try {
+					ps.close();
+				} catch (SQLException e1) {
+					log.error("Failed to close PrepareStatement connection", e1);
+				}
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					log.error("Failed to close ResultSet connection", e);
+				}
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					log.error("Failed to close connection", e);
+				}
 			}
 			ticketHolders = new ArrayList<Person>();
 		}
