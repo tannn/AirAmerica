@@ -1,12 +1,14 @@
 package com.airamerica;
 
+import com.airamerica.interfaces.InvoiceData;
 import com.airamerica.utils.DatabaseInfo;
+
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -14,157 +16,163 @@ import java.util.logging.Logger;
  */
 public class Invoice {
 
-    private String invoiceCode;
-    private String customerCode;
-    private String salespersonCode;
-    private String invoiceDate;
-    private ArrayList<Product> products;
+	public static Logger log = Logger.getLogger(InvoiceData.class);
 
-    public Invoice(String invoiceCode, String customerCode, String salespersonCode, String invoiceDate,
-            ArrayList<Integer> productInfo) {
-        this.invoiceCode = invoiceCode;
-        this.customerCode = customerCode;
-        this.salespersonCode = salespersonCode;
-        this.invoiceDate = invoiceDate;
-        products = new ArrayList<Product>();
-        ArrayList<Person> ticketHolders = new ArrayList<Person>();
+	private String invoiceCode;
+	private String customerCode;
+	private String salespersonCode;
+	private String invoiceDate;
+	private ArrayList<Product> products;
 
-        for (Integer i : productInfo) {
+	public Invoice(String invoiceCode, String customerCode, String salespersonCode, String invoiceDate,
+			ArrayList<Integer> productInfo) {
+		this.invoiceCode = invoiceCode;
+		this.customerCode = customerCode;
+		this.salespersonCode = salespersonCode;
+		this.invoiceDate = invoiceDate;
+		products = new ArrayList<Product>();
+		ArrayList<Person> ticketHolders = new ArrayList<Person>();
 
-            String productType = null;
-            try {
-                PreparedStatement ps1 = DatabaseInfo.getConnection().prepareStatement("select * from Product join InvoiceProduct join Passenger"
-                        + "on Product.Product_ID = InvoiceProduct.Product_ID and "
-                        + "InvoiceProduct.Passenger_ID = Passenger.Passenger_ID"
-                        + "where Product_ID = ?");
-                ps1.setInt(1, i);
-                ResultSet rs1 = ps1.executeQuery();
-                rs1.next();
-                productType = rs1.getString("ProductType");
+		Connection conn = DatabaseInfo.getConnection();
 
-                PreparedStatement ps2 = DatabaseInfo.getConnection().prepareStatement("select PersonCode, Age, Nationality from "
-                        + "Passenger join Person on Passenger.Person_ID = "
-                        + "Person.Person_ID where Product_ID = ?");
-                ps2.setInt(1, i);
-                ResultSet rs2 = ps2.executeQuery();
-                rs2.next();
+		for (Integer i : productInfo) {
 
-                if (productType.equals("TS")) {
-                    while (!rs2.isLast()) {
-                        ticketHolders.add(new Person(rs2.getString("PersonCode"), rs2.getString("IdentityNumber"), 
-                                rs2.getInt("Age"), rs2.getString("Nationality")));
-                        rs2.next();
-                    }
-                    products.add(new Ticket(rs1.getString("ProductCode"), "TS",
-                            rs1.getString("FlightDate"), rs1.getString("SeatNumber"),
-                            ticketHolders, rs1.getString("TicketNote")));
-                } else if (productType.equals("TA")) {
-                    while (!rs2.isLast()) {
-                        ticketHolders.add(new Person(rs2.getString("PersonCode"), rs2.getString("IdentityNumber"), 
-                                rs2.getInt("Age"), rs2.getString("Nationality")));
-                        rs2.next();
-                    }
-                    products.add(new AwardTicket(rs1.getString("ProductCode"),
-                            rs1.getString("FlightDate"), rs1.getString("SeatNumber"),
-                            ticketHolders, rs1.getString("TicketNote")));
-                } else if (productType.equals("TO")) {
-                    while (!rs2.isLast()) {
-                        ticketHolders.add(new Person(rs2.getString("PersonCode"), rs2.getString("IdentityNumber"), 
-                                rs2.getInt("Age"), rs2.getString("Nationality")));
-                        rs2.next();
-                    }
-                    products.add(new OffseasonTicket(rs1.getString("ProductCode"),
-                            rs1.getString("FlightDate"), rs1.getString("SeatNumber"),
-                            ticketHolders, rs1.getString("TicketNote")));
-                } else if (productType.equals("SI")) {
-                    products.add(new Insurance(rs1.getString("ProductCode"),rs1.getInt("Quantity"),rs1.getString("TicketCode")));
-                } else if (productType.equals("SS")) {
-                    products.add(new SpecialAssistance(rs1.getString("ProductCode"),rs1.getString("SATypeOfService")));
-                } else if (productType.equals("SC")) {
-                    products.add(new CheckedBaggage(rs1.getString("ProductCode"),rs1.getInt("Quantity")));
-                } else if (productType.equals("SR")) {
-                    products.add(new Refreshment(rs1.getString("ProductCode"),rs1.getInt("Quantity")));
-                }
+			System.out.println("DEBUG: PRODUCT INFO: " + i);
 
-                rs2.close();
-                ps2.close();
-                rs1.close();
-                ps1.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(Ticket.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            ticketHolders = new ArrayList<Person>();
-        }
+			String productType = null;
+			try {
+				PreparedStatement ps1 = conn.prepareStatement(
+						"select * from Product join InvoiceProduct on Product.Product_ID = InvoiceProduct.Product_ID join Passenger "
+						+ "on InvoiceProduct.Passenger_ID = Passenger.Passenger_ID where Product.Product_ID = ?");
+				ps1.setInt(1, i);
+				ResultSet rs1 = ps1.executeQuery();
+				while (rs1.next()) {
+					productType = rs1.getString("ProductType");
 
-    }
+					PreparedStatement ps2 = conn.prepareStatement("select PersonCode, Age, Nationality, IdentityNumber from "
+							+ "Passenger join Person on Passenger.Person_ID = "
+							+ "Person.Person_ID where Product_ID = ?");
+					ps2.setInt(1, i);
+					ResultSet rs2 = ps2.executeQuery();
+					rs2.next();
 
-    public String getInvoiceCode() {
-        return invoiceCode;
-    }
+					if (productType.equals("TS")) {
+						while (!rs2.isLast()) {
+							ticketHolders.add(new Person(rs2.getString("PersonCode"), rs2.getString("IdentityNumber"),
+									rs2.getInt("Age"), rs2.getString("Nationality")));
+							rs2.next();
+						}
+						products.add(new Ticket(rs1.getString("ProductCode"), "TS", rs1.getString("FlightDate"),
+								rs1.getString("SeatNumber"), ticketHolders, rs1.getString("TicketNote")));
+					} else if (productType.equals("TA")) {
+						while (!rs2.isLast()) {
+							ticketHolders.add(new Person(rs2.getString("PersonCode"), rs2.getString("IdentityNumber"),
+									rs2.getInt("Age"), rs2.getString("Nationality")));
+							rs2.next();
+						}
+						products.add(new AwardTicket(rs1.getString("ProductCode"), rs1.getString("FlightDate"),
+								rs1.getString("SeatNumber"), ticketHolders, rs1.getString("TicketNote")));
+					} else if (productType.equals("TO")) {
+						while (!rs2.isLast()) {
+							ticketHolders.add(new Person(rs2.getString("PersonCode"), rs2.getString("IdentityNumber"),
+									rs2.getInt("Age"), rs2.getString("Nationality")));
+							rs2.next();
+						}
+						products.add(new OffseasonTicket(rs1.getString("ProductCode"), rs1.getString("FlightDate"),
+								rs1.getString("SeatNumber"), ticketHolders, rs1.getString("TicketNote")));
+					} else if (productType.equals("SI")) {
+						products.add(new Insurance(rs1.getString("ProductCode"), rs1.getInt("Quantity"),
+								rs1.getString("TicketCode")));
+					} else if (productType.equals("SS")) {
+						products.add(
+								new SpecialAssistance(rs1.getString("ProductCode"), rs1.getString("SATypeOfService")));
+					} else if (productType.equals("SC")) {
+						products.add(new CheckedBaggage(rs1.getString("ProductCode"), rs1.getInt("Quantity")));
+					} else if (productType.equals("SR")) {
+						products.add(new Refreshment(rs1.getString("ProductCode"), rs1.getInt("Quantity")));
+					}
 
-    public String getCustomerCode() {
-        return customerCode;
-    }
+					rs2.close();
+					ps2.close();
+				}
+				rs1.close();
+				ps1.close();
+				conn.close();
+			} catch (SQLException ex) {
+				log.error("Failed to create invoice ", ex);
+			}
+			ticketHolders = new ArrayList<Person>();
+		}
 
-    public String getSalespersonCode() {
-        return salespersonCode;
-    }
+	}
 
-    /**
-     *
-     * @return Name (Last, First) of the salesperson
-     */
-    public String getSalesperson() {
-        if (salespersonCode.equalsIgnoreCase("online")) {
-            return "ONLINE";
-        } else {
-            return Person.getPersonName(salespersonCode);
-        }
-    }
+	public String getInvoiceCode() {
+		return invoiceCode;
+	}
 
-    public String getInvoiceDate() {
-        return invoiceDate;
-    }
+	public String getCustomerCode() {
+		return customerCode;
+	}
 
-    public ArrayList<Product> getProducts() {
-        return products;
-    }
+	public String getSalespersonCode() {
+		return salespersonCode;
+	}
 
-    public double getSubtotals() {
-        float total = 0;
-        for (Product p : products) {
-            total += p.calculatePrice();
-        }
-        return total;
-    }
+	/**
+	 *
+	 * @return Name (Last, First) of the salesperson
+	 */
+	public String getSalesperson() {
+		if (salespersonCode.equalsIgnoreCase("online")) {
+			return "ONLINE";
+		} else {
+			return Person.getPersonName(salespersonCode);
+		}
+	}
 
-    public double getFees() {
-        if (Customer.getCustomerType(getCustomerCode()).equals("[CORPORATE]")) {
-            return 40.00;
-        } else {
-            return 0.00;
-        }
-    }
+	public String getInvoiceDate() {
+		return invoiceDate;
+	}
 
-    public double getTaxes() {
-        float total = 0;
-        for (Product p : products) {
-            total += p.calculateTax();
-        }
-        return total;
-    }
+	public ArrayList<Product> getProducts() {
+		return products;
+	}
 
-    public double getDiscounts() {
-        if (Customer.getCustomerType(getCustomerCode()).equals("[CORPORATE]")) {
-            return getSubtotals() * .12;
-        } else if (Customer.getCustomerType(getCustomerCode()).equals("[GOVERNMENT]")) {
-            return getTaxes();
-        } else {
-            return 0;
-        }
-    }
+	public double getSubtotals() {
+		float total = 0;
+		for (Product p : products) {
+			total += p.calculatePrice();
+		}
+		return total;
+	}
 
-    public double getTotals() {
-        return getSubtotals() + getFees() + getTaxes() - getDiscounts();
-    }
+	public double getFees() {
+		if (Customer.getCustomerType(getCustomerCode()).equals("[CORPORATE]")) {
+			return 40.00;
+		} else {
+			return 0.00;
+		}
+	}
+
+	public double getTaxes() {
+		float total = 0;
+		for (Product p : products) {
+			total += p.calculateTax();
+		}
+		return total;
+	}
+
+	public double getDiscounts() {
+		if (Customer.getCustomerType(getCustomerCode()).equals("[CORPORATE]")) {
+			return getSubtotals() * .12;
+		} else if (Customer.getCustomerType(getCustomerCode()).equals("[GOVERNMENT]")) {
+			return getTaxes();
+		} else {
+			return 0;
+		}
+	}
+
+	public double getTotals() {
+		return getSubtotals() + getFees() + getTaxes() - getDiscounts();
+	}
 }
