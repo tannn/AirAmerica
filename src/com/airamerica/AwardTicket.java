@@ -29,14 +29,15 @@ public class AwardTicket extends Ticket {
 		
 		try {
 			PreparedStatement ps = DatabaseInfo.getConnection()
-					.prepareStatement("SELECT ATPointsPerMile, "
+					.prepareStatement("SELECT ATPointsPerMile "
 							+  "FROM Product WHERE ProductCode = ?");
 			ps.setString(1, this.getProductCode());
 			ResultSet rs = ps.executeQuery();
+			rs.next();
 			this.pointsPerMile = rs.getDouble("ATPointsPerMile");
 
 			ps.close();
-
+			rs.close();
 		} catch (SQLException e1) {
 			log.error("Failed to retrieve award ticket details under code " + productCode, e1);
 		}
