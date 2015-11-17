@@ -15,12 +15,6 @@ package com.airamerica.interfaces;
  * your database instead of the .dat files.
  */
 
-/**
- * TODO:
- * - Test all methods
- * - Change report generation to read database instead of data files
- */
-
 import java.sql.*;
 import com.airamerica.utils.DatabaseInfo;
 import org.apache.log4j.Logger;
@@ -33,19 +27,25 @@ import org.apache.log4j.Logger;
 public class InvoiceData {
 
 	public static Logger log = Logger.getLogger(InvoiceData.class);
-	
+
 	/**
 	 * Method that removes every person record from the database
 	 */
 	public static void removeAllPersons() {
+		
+		Connection conn = null;
 
 		try {
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Person");
-			ps.executeQuery();
+			
+			conn = DatabaseInfo.getConnection();
+			
+			PreparedStatement ps  = conn.prepareStatement("DELETE FROM Person");
+			ps.executeUpdate();
 
 			ps.close();
+			conn.close();
 		} catch (SQLException e1) {
-			log.error("Failed to delete Person table",e1);
+			log.error("Failed to delete Person table", e1);
 		}
 
 	}
@@ -53,25 +53,29 @@ public class InvoiceData {
 	/**
 	 * Method to add a person record to the database with the provided data.
 	 */
+	@SuppressWarnings("resource")
 	public static void addPerson(String personCode, String firstName, String lastName, String phoneNo, String street,
 			String city, String state, String zip, String country) {
 		int personID;
 		int addressID;
-
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		try {
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+			conn = DatabaseInfo.getConnection();
+			ps = conn.prepareStatement(
 					"INSERT INTO Person (PersonCode, FirstName, LastName, PhoneNumber) VALUES (?,?,?,?)");
 			ps.setString(1, personCode);
 			ps.setString(2, firstName);
 			ps.setString(3, lastName);
 			ps.setString(4, phoneNo);
 			ps.executeUpdate();
-			ps = DatabaseInfo.getConnection().prepareStatement("SELECT LAST_INSERT_ID()");
-			ResultSet rs = ps.executeQuery();
+			ps = conn.prepareStatement("SELECT LAST_INSERT_ID()");
+			rs = ps.executeQuery();
 			rs.next();
 			personID = rs.getInt("LAST_INSERT_ID()");
 
-			ps = DatabaseInfo.getConnection().prepareStatement(
+			ps = conn.prepareStatement(
 					"INSERT INTO Address (Address, City, StateProvince, Zip, Country) VALUES (?,?,?,?,?)");
 			ps.setString(1, street);
 			ps.setString(2, city);
@@ -79,19 +83,34 @@ public class InvoiceData {
 			ps.setString(4, zip);
 			ps.setString(5, country);
 			ps.executeUpdate();
-			ps = DatabaseInfo.getConnection().prepareStatement("SELECT LAST_INSERT_ID()");
+			ps = conn.prepareStatement("SELECT LAST_INSERT_ID()");
 			rs = ps.executeQuery();
 			rs.next();
 			addressID = rs.getInt("LAST_INSERT_ID()");
 
-			ps = DatabaseInfo.getConnection().prepareStatement("UPDATE Person SET Address_ID = ? WHERE Person_ID = ?");
+			ps = conn.prepareStatement("UPDATE Person SET Address_ID = ? WHERE Person_ID = ?");
 			ps.setInt(1, addressID);
 			ps.setInt(2, personID);
 			ps.executeUpdate();
 
-			ps.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add new person to Person",e1);
+			log.error("Failed to add new person to Person", e1);
+		} finally{
+			try {
+				ps.close();
+			} catch (SQLException e1) {
+				log.error("Failed to close PrepareStatement connection", e1);
+			}
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				log.error("Failed to close ResultSet connection", e);
+			}
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				log.error("Failed to close connection", e);
+			}
 		}
 	}
 
@@ -99,28 +118,38 @@ public class InvoiceData {
 	 * Method that removes every airport record from the database
 	 */
 	public static void removeAllAirports() {
+		
+		Connection conn = null;
 		try {
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Airport");
-			ps.executeQuery();
+			
+			conn = DatabaseInfo.getConnection();
+			PreparedStatement ps = conn.prepareStatement("DELETE FROM Airport");
+			ps.executeUpdate();
 
 			ps.close();
+			conn.close();
 		} catch (SQLException e1) {
-			log.error("Failed to delete Airport table",e1);
+			log.error("Failed to delete Airport table", e1);
 		}
 	}
 
 	/**
 	 * Method to add a airport record to the database with the provided data.
 	 */
+	@SuppressWarnings("resource")
 	public static void addAirport(String airportCode, String name, String street, String city, String state, String zip,
-			String country, int latdegs, int latmins, int londegs, int lonmins, double passengerFacilityFee) { // Not
-																												// tested
+			String country, int latdegs, int latmins, int londegs, int lonmins, double passengerFacilityFee) { 
+		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
 		try {
-
+			conn = DatabaseInfo.getConnection();
 			int airportID;
 			int addressID;
 
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+			ps = conn.prepareStatement(
 					"INSERT INTO Airport (AirportCode, AirportName, LatDeg, LatMin, LongDeg, LongMin, PassengerFee) VALUES (?,?,?,?,?,?,?)");
 			ps.setString(1, airportCode);
 			ps.setString(2, name);
@@ -130,12 +159,12 @@ public class InvoiceData {
 			ps.setInt(6, lonmins);
 			ps.setDouble(7, passengerFacilityFee);
 			ps.executeUpdate();
-			ps = DatabaseInfo.getConnection().prepareStatement("SELECT LAST_INSERT_ID()");
-			ResultSet rs = ps.executeQuery();
+			ps =conn.prepareStatement("SELECT LAST_INSERT_ID()");
+			rs = ps.executeQuery();
 			rs.next();
 			airportID = rs.getInt("LAST_INSERT_ID()");
 
-			ps = DatabaseInfo.getConnection().prepareStatement(
+			ps = conn.prepareStatement(
 					"INSERT INTO Address (Address, City, StateProvince, Zip, Country) VALUES (?,?,?,?,?)");
 			ps.setString(1, street);
 			ps.setString(2, city);
@@ -143,20 +172,37 @@ public class InvoiceData {
 			ps.setString(4, zip);
 			ps.setString(5, country);
 			ps.executeUpdate();
-			ps = DatabaseInfo.getConnection().prepareStatement("SELECT LAST_INSERT_ID()");
+			ps = conn.prepareStatement("SELECT LAST_INSERT_ID()");
 			rs = ps.executeQuery();
 			rs.next();
 			addressID = rs.getInt("LAST_INSERT_ID()");
 
-			ps = DatabaseInfo.getConnection()
-					.prepareStatement("UPDATE Airport SET Address_ID = ? WHERE Airport_ID = ?");
+			ps = conn.prepareStatement("UPDATE Airport SET Address_ID = ? WHERE Airport_ID = ?");
 			ps.setInt(1, addressID);
 			ps.setInt(2, airportID);
 			ps.executeUpdate();
 
 			ps.close();
+			rs.close();
+			conn.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add new Airport to Airport",e1);
+			log.error("Failed to add new Airport to Airport", e1);
+		} finally{
+			try {
+				ps.close();
+			} catch (SQLException e1) {
+				log.error("Failed to close PrepareStatement connection", e1);
+			}
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				log.error("Failed to close ResultSet connection", e);
+			}
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				log.error("Failed to close connection", e);
+			}
 		}
 	}
 
@@ -164,29 +210,62 @@ public class InvoiceData {
 	 * Adds an email record corresponding person record corresponding to the
 	 * provided <code>personCode</code>
 	 */
+	@SuppressWarnings("resource")
 	public static void addEmail(String personCode, String email) {
+		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		try {
+			
+			conn = DatabaseInfo.getConnection();
+			
 			int emailID;
-
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
-					"INSERT INTO Email (Person_ID, Email) VALUES ((SELECT Person_ID FROM Person WHERE PersonCode = ?),?)");
+			int personID;
+			
+			ps = conn.prepareStatement("SELECT Person_ID FROM Person WHERE PersonCode = ?");
 			ps.setString(1, personCode);
+			rs = ps.executeQuery();
+			rs.next();
+			personID = rs.getInt("Person_ID");
+
+			ps = conn.prepareStatement(
+					"INSERT INTO Email (Person_ID, Email) VALUES (?,?)");
+			ps.setInt(1, personID);
 			ps.setString(2, email);
 			ps.executeUpdate();
-			ps = DatabaseInfo.getConnection().prepareStatement("SELECT LAST_INSERT_ID()");
-			ResultSet rs = ps.executeQuery();
+			ps = conn.prepareStatement("SELECT LAST_INSERT_ID()");
+			rs = ps.executeQuery();
 			rs.next();
 			emailID = rs.getInt("LAST_INSERT_ID()");
 
-			ps = DatabaseInfo.getConnection().prepareStatement(
-					"UPDATE Person SET Email_ID = ? WHERE Person_ID = (SELECT Person_ID FROM Person WHERE PersonCode = ?)");
+			ps = conn.prepareStatement(
+					"UPDATE Person SET Email_ID = ? WHERE Person_ID = ?");
 			ps.setInt(1, emailID);
-			ps.setString(2, personCode);
+			ps.setInt(2, personID);
 			ps.executeUpdate();
 
 			ps.close();
+			rs.close();
+			conn.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add new email to Email",e1);
+			log.error("Failed to add new email to Email", e1);
+		} finally{
+			try {
+				ps.close();
+			} catch (SQLException e1) {
+				log.error("Failed to close PrepareStatement connection", e1);
+			}
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				log.error("Failed to close ResultSet connection", e);
+			}
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				log.error("Failed to close connection", e);
+			}
 		}
 	}
 
@@ -195,13 +274,16 @@ public class InvoiceData {
 	 */
 	public static void removeAllCustomers() {
 
+		Connection conn = null;
 		try {
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Customer");
-			ps.executeQuery();
+			conn = DatabaseInfo.getConnection();
+			PreparedStatement ps = conn.prepareStatement("DELETE FROM Customer");
+			ps.executeUpdate();
 
 			ps.close();
+			conn.close();
 		} catch (SQLException e1) {
-			log.error("Failed to delete Customer table",e1);
+			log.error("Failed to delete Customer table", e1);
 		}
 
 	}
@@ -211,8 +293,10 @@ public class InvoiceData {
 	 */
 	public static void addCustomer(String customerCode, String customerType, String primaryContactPersonCode,
 			String name, int airlineMiles) {
+		Connection conn = null;
 		try {
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+			conn = DatabaseInfo.getConnection();
+			PreparedStatement ps = conn.prepareStatement(
 					"INSERT INTO Customer (CustomerCode, CustomerType, ContactPerson_ID, CustomerName, CustomerMiles) VALUES (?,?,(SELECT Person_ID FROM Person WHERE PersonCode = ?),?,?)");
 			ps.setString(1, customerCode);
 			ps.setString(2, customerType);
@@ -222,8 +306,9 @@ public class InvoiceData {
 			ps.executeUpdate();
 
 			ps.close();
+			conn.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add new customer to Customer",e1);
+			log.error("Failed to add new customer to Customer", e1);
 		}
 	}
 
@@ -231,13 +316,16 @@ public class InvoiceData {
 	 * Removes all product records from the database
 	 */
 	public static void removeAllProducts() {
+		Connection conn = null;
 		try {
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Product");
-			ps.executeQuery();
+			conn = DatabaseInfo.getConnection();
+			PreparedStatement ps = conn.prepareStatement("DELETE FROM Product");
+			ps.executeUpdate();
 
 			ps.close();
+			conn.close();
 		} catch (SQLException e1) {
-			log.error("Failed to delete Product table",e1);
+			log.error("Failed to delete Product table", e1);
 		}
 
 	}
@@ -249,20 +337,20 @@ public class InvoiceData {
 			String depTime, String arrTime, String flightNo, String flightClass, String aircraftType) {
 		try {
 			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
-					"INSERT INTO Product (ProductType, ProductCode, DepAirport_ID, ArrAirport_ID, DepartureTime, ArrivalTime, FlightClass, PlaneName, FlightNumber) VALUES ('TS',(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),?,?,?,?,?,?)");
-			ps.setString(2, productCode);
-			ps.setString(3, depAirportCode);
-			ps.setString(4, arrAirportCode);
-			ps.setString(5, depTime);
-			ps.setString(6, arrTime);
-			ps.setString(7, flightClass);
-			ps.setString(8, aircraftType);
-			ps.setString(9, flightNo);
+					"INSERT INTO Product (ProductType, ProductCode, DepAirport_ID, ArrAirport_ID, DepartureTime, ArrivalTime, FlightClass, PlaneName, FlightNumber) VALUES ('TS',?,(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),?,?,?,?,?)");
+			ps.setString(1, productCode);
+			ps.setString(2, depAirportCode);
+			ps.setString(3, arrAirportCode);
+			ps.setString(4, depTime);
+			ps.setString(5, arrTime);
+			ps.setString(6, flightClass);
+			ps.setString(7, aircraftType);
+			ps.setString(8, flightNo);
 			ps.executeUpdate();
 
 			ps.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add new standardTicket to Product",e1);
+			log.error("Failed to add new standardTicket to Product", e1);
 		}
 	}
 
@@ -272,25 +360,28 @@ public class InvoiceData {
 	public static void addOffSeasonTicket(String productCode, String seasonStartDate, String seasonEndDate,
 			String depAirportCode, String arrAirportCode, String depTime, String arrTime, String flightNo,
 			String flightClass, String aircraftType, double rebate) {
+		Connection conn = null;
 		try {
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
-					"INSERT INTO Product (ProductType, ProductCode, DepAirport_ID, ArrAirport_ID, DepartureTime, ArrivalTime, FlightClass, PlaneName, OTSeasonStartDate, OTSeasonEndDate, OTRebate, FlightNumber) VALUES ('TO',(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),?,?,?,?,?,?,?,?,?)");
-			ps.setString(2, productCode);
-			ps.setString(3, depAirportCode);
-			ps.setString(4, arrAirportCode);
-			ps.setString(5, depTime);
-			ps.setString(6, arrTime);
-			ps.setString(7, flightClass);
-			ps.setString(8, aircraftType);
-			ps.setString(9, seasonStartDate);
-			ps.setString(10, seasonEndDate);
-			ps.setDouble(11, rebate);
-			ps.setString(12, flightNo);
+			conn = DatabaseInfo.getConnection();
+			PreparedStatement ps = conn.prepareStatement(
+					"INSERT INTO Product (ProductType, ProductCode, DepAirport_ID, ArrAirport_ID, DepartureTime, ArrivalTime, FlightClass, PlaneName, OTSeasonStartDate, OTSeasonEndDate, OTRebate, FlightNumber) VALUES ('TO',?,(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),?,?,?,?,?,?,?,?)");
+			ps.setString(1, productCode);
+			ps.setString(2, depAirportCode);
+			ps.setString(3, arrAirportCode);
+			ps.setString(4, depTime);
+			ps.setString(5, arrTime);
+			ps.setString(6, flightClass);
+			ps.setString(7, aircraftType);
+			ps.setString(8, seasonStartDate);
+			ps.setString(9, seasonEndDate);
+			ps.setDouble(10, rebate);
+			ps.setString(11, flightNo);
 			ps.executeUpdate();
-
+			
 			ps.close();
+			conn.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add new offseasonTicket to Product",e1);
+			log.error("Failed to add new offseasonTicket to Product", e1);
 		}
 	}
 
@@ -299,23 +390,26 @@ public class InvoiceData {
 	 */
 	public static void addAwardsTicket(String productCode, String depAirportCode, String arrAirportCode, String depTime,
 			String arrTime, String flightNo, String flightClass, String aircraftType, double pointsPerMile) {
+		Connection conn = null;
 		try {
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
-					"INSERT INTO Product (ProductType, ProductCode, DepAirport_ID, ArrAirport_ID, DepartureTime, ArrivalTime, FlightClass, PlaneName, ATPointsPerMile, FlightNumber) VALUES ('TA',(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),?,?,?,?,?,?,?)");
-			ps.setString(2, productCode);
-			ps.setString(3, depAirportCode);
-			ps.setString(4, arrAirportCode);
-			ps.setString(5, depTime);
-			ps.setString(6, arrTime);
-			ps.setString(7, flightClass);
-			ps.setString(8, aircraftType);
-			ps.setDouble(9, pointsPerMile);
-			ps.setString(10, flightNo);
+			conn = DatabaseInfo.getConnection();
+			PreparedStatement ps = conn.prepareStatement(
+					"INSERT INTO Product (ProductType, ProductCode, DepAirport_ID, ArrAirport_ID, DepartureTime, ArrivalTime, FlightClass, PlaneName, ATPointsPerMile, FlightNumber) VALUES ('TA',?,(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),(SELECT Airport_ID FROM Airport WHERE AirportCode = ?),?,?,?,?,?,?)");
+			ps.setString(1, productCode);
+			ps.setString(2, depAirportCode);
+			ps.setString(3, arrAirportCode);
+			ps.setString(4, depTime);
+			ps.setString(5, arrTime);
+			ps.setString(6, flightClass);
+			ps.setString(7, aircraftType);
+			ps.setDouble(8, pointsPerMile);
+			ps.setString(9, flightNo);
 			ps.executeUpdate();
 
 			ps.close();
+			conn.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add new awardsTicket to Product",e1);
+			log.error("Failed to add new awardsTicket to Product", e1);
 		}
 	}
 
@@ -323,17 +417,20 @@ public class InvoiceData {
 	 * Adds a CheckedBaggage record to the database with the provided data.
 	 */
 	public static void addCheckedBaggage(String productCode, String ticketCode) {
+		Connection conn = null;
 		try {
-			PreparedStatement ps = DatabaseInfo.getConnection()
+			conn = DatabaseInfo.getConnection();
+			PreparedStatement ps = conn
 					.prepareStatement("INSERT INTO Product (ProductType, ProductCode, TicketCode) VALUES ('SC',?,?)");
-			ps.setString(2, productCode);
-			ps.setString(3, ticketCode);
+			ps.setString(1, productCode);
+			ps.setString(2, ticketCode);
 
 			ps.executeUpdate();
 
 			ps.close();
+			conn.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add new checkedBaggage to Product",e1);
+			log.error("Failed to add new checkedBaggage to Product", e1);
 		}
 	}
 
@@ -341,18 +438,21 @@ public class InvoiceData {
 	 * Adds a Insurance record to the database with the provided data.
 	 */
 	public static void addInsurance(String productCode, String productName, String ageClass, double costPerMile) {
+		Connection conn = null;
 		try {
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+			conn = DatabaseInfo.getConnection();
+			PreparedStatement ps = conn.prepareStatement(
 					"INSERT INTO Product (ProductType, ProductCode, ProductPrintName, InsuranceAgeClass, InsuranceCostPerMile) VALUES ('SI',?,?,?,?)");
-			ps.setString(2, productCode);
-			ps.setString(3, productName);
-			ps.setString(4, ageClass);
-			ps.setDouble(5, costPerMile);
+			ps.setString(1, productCode);
+			ps.setString(2, productName);
+			ps.setString(3, ageClass);
+			ps.setDouble(4, costPerMile);
 			ps.executeUpdate();
 
 			ps.close();
+			conn.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add new insurance to Product",e1);
+			log.error("Failed to add new insurance to Product", e1);
 		}
 	}
 
@@ -360,14 +460,17 @@ public class InvoiceData {
 	 * Adds a SpecialAssistance record to the database with the provided data.
 	 */
 	public static void addSpecialAssistance(String productCode, String assistanceType) {
+		Connection conn = null;
 		try {
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+			conn = DatabaseInfo.getConnection();
+			PreparedStatement ps = conn.prepareStatement(
 					"INSERT INTO Product (ProductType, ProductCode, SATypeOfService) VALUES ('SS',?,?)");
-			ps.setString(2, productCode);
-			ps.setString(3, assistanceType);
+			ps.setString(1, productCode);
+			ps.setString(2, assistanceType);
 			ps.executeUpdate();
 
 			ps.close();
+			conn.close();
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
@@ -377,34 +480,37 @@ public class InvoiceData {
 	 * Adds a refreshment record to the database with the provided data.
 	 */
 	public static void addRefreshment(String productCode, String name, double cost) {
+		Connection conn = null;
 		try {
-
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+			conn = DatabaseInfo.getConnection();
+			PreparedStatement ps = conn.prepareStatement(
 					"INSERT INTO Product (ProductType, ProductPrintName, Cost, ProductCode) VALUES ('SR',?,?,?)");
-			ps.setString(2, name);
+			ps.setString(1, name);
 			ps.setDouble(2, cost);
 			ps.setString(3, productCode);
 			ps.executeUpdate();
 
 			ps.close();
+			conn.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add new refreshment to Product",e1);
+			log.error("Failed to add new refreshment to Product", e1);
 		}
 	}
 
 	/**
 	 * Removes all invoice records from the database
 	 */
-	public static void removeAllInvoices() { // Not tested
+	public static void removeAllInvoices() {
+		Connection conn = null;
 		try {
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM Invoice");
-			ps.executeQuery();
-			ps = DatabaseInfo.getConnection().prepareStatement("DELETE FROM InvoiceProducts");
-			ps.executeQuery();
+			conn = DatabaseInfo.getConnection();
+			PreparedStatement ps = conn.prepareStatement("DELETE FROM Invoice");
+			ps.executeUpdate();
 
 			ps.close();
+			conn.close();
 		} catch (SQLException e1) {
-			log.error("Failed to delete Invoice and InvoiceProducts tables",e1);
+			log.error("Failed to delete Invoice", e1);
 		}
 	}
 
@@ -412,9 +518,10 @@ public class InvoiceData {
 	 * Adds an invoice record to the database with the given data.
 	 */
 	public static void addInvoice(String invoiceCode, String customerCode, String salesPersonCode, String invoiceDate) {
+		Connection conn = null;
 		try {
-
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+			conn = DatabaseInfo.getConnection();
+			PreparedStatement ps = conn.prepareStatement(
 					"INSERT INTO Invoice (InvoiceCode, Customer_ID, SalesPerson_ID, InvoiceDate) VALUES (?,(SELECT Customer_ID FROM Customer WHERE CustomerCode = ?),(SELECT Person_ID FROM Person WHERE PersonCode = ?),?)");
 			ps.setString(1, invoiceCode);
 			ps.setString(2, customerCode);
@@ -424,7 +531,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add new invoice to Invoice",e1);
+			log.error("Failed to add new invoice to Invoice", e1);
 		}
 	}
 
@@ -447,7 +554,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add new ticket to invoice in InvoiceProduct",e1);
+			log.error("Failed to add new ticket to invoice in InvoiceProduct", e1);
 		}
 	}
 
@@ -455,13 +562,21 @@ public class InvoiceData {
 	 * Adds a Passenger information to an invoice corresponding to the provided
 	 * <code>invoiceCode</code>
 	 */
+	@SuppressWarnings("resource")
 	public static void addPassengerInformation(String invoiceCode, String productCode, String personCode,
 			String identity, int age, String nationality, String seat) {
+		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
 		try {
 
+			conn = DatabaseInfo.getConnection();
+			
 			int passengerID;
 
-			PreparedStatement ps = DatabaseInfo.getConnection().prepareStatement(
+			ps = conn.prepareStatement(
 					"INSERT INTO Passenger (Product_ID, Person_ID, Age, Nationality, SeatNumber, IdentityNumber) VALUES ((SELECT Product_ID FROM Product WHERE ProductCode = ?),(SELECT Person_ID FROM Person WHERE PersonCode = ?),?,?,?,?)");
 			ps.setString(1, productCode);
 			ps.setString(2, personCode);
@@ -470,20 +585,37 @@ public class InvoiceData {
 			ps.setString(5, seat);
 			ps.setString(6, identity);
 			ps.executeUpdate();
-			ps = DatabaseInfo.getConnection().prepareStatement("SELECT LAST_INSERT_ID()");
-			ResultSet rs = ps.executeQuery();
+			ps = conn.prepareStatement("SELECT LAST_INSERT_ID()");
+			rs = ps.executeQuery();
 			rs.next();
 			passengerID = rs.getInt("LAST_INSERT_ID()");
 
-			ps = DatabaseInfo.getConnection().prepareStatement(
+			ps = conn.prepareStatement(
 					"UPDATE InvoiceProduct SET Passenger_ID = ? WHERE Invoice_ID = (SELECT Invoice_ID FROM Invoice WHERE InvoiceCode = ?)");
 			ps.setInt(1, passengerID);
 			ps.setString(2, invoiceCode);
 			ps.executeUpdate();
 
 			ps.close();
+			rs.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add new passenger to Passenger",e1);
+			log.error("Failed to add new passenger to Passenger", e1);
+		} finally{
+			try {
+				ps.close();
+			} catch (SQLException e1) {
+				log.error("Failed to close PrepareStatement connection", e1);
+			}
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				log.error("Failed to close ResultSet connection", e);
+			}
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				log.error("Failed to close connection", e);
+			}
 		}
 	}
 
@@ -505,7 +637,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add new insurance to invoice in InvoiceProduct",e1);
+			log.error("Failed to add new insurance to invoice in InvoiceProduct", e1);
 		}
 	}
 
@@ -526,7 +658,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add new checked baggage to invoice in InvoiceProduct",e1);
+			log.error("Failed to add new checked baggage to invoice in InvoiceProduct", e1);
 		}
 	}
 
@@ -547,7 +679,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add special asisstance to invoice in InvoiceProduct",e1);
+			log.error("Failed to add special asisstance to invoice in InvoiceProduct", e1);
 		}
 	}
 
@@ -568,7 +700,7 @@ public class InvoiceData {
 
 			ps.close();
 		} catch (SQLException e1) {
-			log.error("Failed to add new refreshment to invoice in InvoiceProduct",e1);
+			log.error("Failed to add new refreshment to invoice in InvoiceProduct", e1);
 		}
 	}
 }
