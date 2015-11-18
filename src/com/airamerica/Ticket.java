@@ -51,15 +51,14 @@ public class Ticket extends Product {
 		this.seat = seat;
 		this.ticketHolders = ticketHolders;
 		this.ticketNote = ticketNote;
-		
+
 		Connection conn = null;
 
 		try {
 			conn = DatabaseInfo.getConnection();
-			
-			PreparedStatement ps = conn
-					.prepareStatement("SELECT ArrAirport_ID, DepAirport_ID, "
-							+ "ArrivalTime, DepartureTime, FlightNumber, FlightClass,"
+
+			PreparedStatement ps = conn.prepareStatement(
+					"SELECT ArrAirport_ID, DepAirport_ID, " + "ArrivalTime, DepartureTime, FlightNumber, FlightClass,"
 							+ " PlaneName FROM Product WHERE ProductCode = ?");
 			ps.setString(1, productCode);
 			ResultSet rs = ps.executeQuery();
@@ -137,15 +136,33 @@ public class Ticket extends Product {
 
 	public String getArrCity() {
 		String data = "";
+
+		Connection conn = DatabaseInfo.getConnection();
+
 		try {
-			PreparedStatement ps = DatabaseInfo.getConnection()
-					.prepareStatement("select City from Address join Airport on "
-							+ "Airport.Address_ID = Address.Address_ID where AirportCode = ?");
+
+			PreparedStatement ps = conn.prepareStatement("select Address_ID from Airport where AirportCode = ?");
 			ps.setString(1, this.arrAirportCode);
 			ResultSet rs = ps.executeQuery();
-			data = rs.getString("City");
+			rs.next();
+			String airportID = "";
+			airportID = rs.getString("Address_ID");
+
+			if (airportID == null) {
+				data = "NULL";
+			} else {
+
+				ps = conn.prepareStatement("select City, Airport.Address_ID from Address join Airport on "
+						+ "Airport.Address_ID = Address.Address_ID where AirportCode = ?");
+				ps.setString(1, this.arrAirportCode);
+				rs = ps.executeQuery();
+				rs.next();
+
+				data = rs.getString("City");
+			}
 			ps.close();
 			rs.close();
+			conn.close();
 		} catch (SQLException e1) {
 			log.error("Failed to retrieve arrival city ", e1);
 		}
@@ -161,6 +178,7 @@ public class Ticket extends Product {
 							+ "Airport.Address_ID = Address.Address_ID where AirportCode = ?");
 			ps.setString(1, this.depAirportCode);
 			ResultSet rs = ps.executeQuery();
+			rs.next();
 			data = rs.getString("City");
 			ps.close();
 			rs.close();
@@ -216,9 +234,9 @@ public class Ticket extends Product {
 		PreparedStatement ps2;
 		ResultSet rs1;
 		ResultSet rs2;
-		
+
 		Connection conn = DatabaseInfo.getConnection();
-		
+
 		String getProductInfo = "select * from Product join InvoiceProduct join Passenger"
 				+ "on Product.Product_ID = InvoiceProduct.Product_ID and "
 				+ "InvoiceProduct.Passenger_ID = Passenger.Passenger_ID" + "where ProductCode = ?";
