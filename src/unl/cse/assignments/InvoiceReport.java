@@ -1,12 +1,13 @@
 package unl.cse.assignments;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.log4j.*;
 
 import com.airamerica.AwardTicket;
 import com.airamerica.CheckedBaggage;
@@ -125,7 +126,6 @@ public class InvoiceReport {
 				subtotal += ((AwardTicket) x).calculatePrice();
 				taxes += ((AwardTicket) x).calculateTax();
 			} else if (x instanceof OffseasonTicket) {
-				System.out.println(x.getProductCode());
 				sb.append("OffseasonTicket(" + ((OffseasonTicket) x).getFlightClass() + ") "
 						+ ((OffseasonTicket) x).getDepAirportCode() + " to " + ((OffseasonTicket) x).getArrAirportCode()
 						+ " (" + format.format(((OffseasonTicket) x).getDistance()) + " miles)\t\t\t\t $"
@@ -203,46 +203,50 @@ public class InvoiceReport {
 	public static void main(String args[]) {
 
 		InvoiceReport ir = new InvoiceReport();
-		
+
 		ArrayList<Integer> products = new ArrayList<Integer>();
 
+		Connection conn = null;
+
 		try {
-			PreparedStatement ps = DatabaseInfo.getConnection()
-					.prepareStatement("select Invoice_ID, InvoiceCode, CustomerCode, "
-							+ "PersonCode, InvoiceDate from Invoice join Customer join Person on "
-							+ "Invoice.Customer_ID = Customer.Customer_ID AND "
-							+ "Invoice.SalesPerson_ID = Person.Person_ID");
+
+			conn = DatabaseInfo.getConnection();
+
+			PreparedStatement ps = conn.prepareStatement(
+					"select Invoice_ID, InvoiceCode, SalesPerson_ID, CustomerCode, InvoiceDate from Invoice join Customer on Invoice.Customer_ID = Customer.Customer_ID");
 			ResultSet rs = ps.executeQuery();
-			
-			while (!rs.isLast()) {
-				rs.next();
-				
-				PreparedStatement ps2 = DatabaseInfo.getConnection()
-						.prepareStatement("select Product_ID from InvoiceProduct where Invoice_ID = ?");
-				ps2.setInt(1, rs.getInt("Invoice_ID"));
-				ResultSet rs2 = ps2.executeQuery();
-				
-				while (!rs2.isLast()) {
-					rs2.next();
+
+			while (rs.next()) {
+
+				ps = conn.prepareStatement("select Product_ID from InvoiceProduct where Invoice_ID = ?");
+				ps.setInt(1, rs.getInt("Invoice_ID"));
+				ResultSet rs2 = ps.executeQuery();
+
+				while (rs2.next()) {
 					products.add(rs2.getInt("Product_ID"));
 				}
-				
-				
-				rs2.close();
-				ps2.close();
-				
-				ir.invoices.add(new Invoice(rs.getString("InvoiceCode"), rs.getString("CustomerCode"), rs.getString("PersonCode"),rs.getString("InvoiceDate"), products));
-				
+
+				if (rs.getString("SalesPerson_ID") == null) {
+					ir.invoices.add(new Invoice(rs.getString("InvoiceCode"), rs.getString("CustomerCode"), "ONLINE",
+							rs.getString("InvoiceDate"), products));
+				} else {
+
+					ps = conn.prepareStatement("select PersonCode from Invoice join Customer join Person on Invoice.Customer_ID = Customer.Customer_ID AND Invoice.SalesPerson_ID = Person.Person_ID where SalesPerson_ID = ?");
+					ps.setInt(1, rs.getInt("SalesPerson_ID"));
+					rs2 = ps.executeQuery();
+					rs2.next();
+					ir.invoices.add(new Invoice(rs.getString("InvoiceCode"), rs.getString("CustomerCode"),
+							rs2.getString("PersonCode"), rs.getString("InvoiceDate"), products));
+					rs2.close();
+				}
+
 				products = new ArrayList<Integer>();
-				
-				
-				
+
 			}
-			
-			
+
 			rs.close();
 			ps.close();
-
+			conn.close();
 		} catch (SQLException e1) {
 			log.error("Failed to retrieve invoices", e1);
 		}
